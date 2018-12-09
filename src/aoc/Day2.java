@@ -13,12 +13,12 @@ public class Day2 {
 		long timeStart = System.currentTimeMillis();
 		List<String> input = Files.readAllLines(Paths.get("src/main/resources/day2-input.file"));
 
-		part1(input);
+		part1And2(input);
 		System.out.println("runned time : " + (System.currentTimeMillis() - timeStart) + " ms");
 
 	}
 
-	public static void part1(List<String> lines) {
+	public static void part1And2(List<String> lines) {
 		int countDoubleLetter = 0;
 		int countTripleLetter = 0;
 		for (String line : lines) {
