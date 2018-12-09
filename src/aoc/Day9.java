@@ -51,7 +51,7 @@ public class Day9 {
 				gridScore.put(currentPlayer, scorePlayer + score);
 			}
 
-			// show(lastNode, rootNode);
+			// showAllPlacedMarbles(lastNode, rootNode, currentPlayer);
 			if (countMarble == baseMarble) {
 				long max = gridScore.entrySet().stream().max(Map.Entry.comparingByValue()).get().getValue();
 				System.out.println(max);
@@ -64,21 +64,21 @@ public class Day9 {
 		System.out.println("runned time : " + (System.currentTimeMillis() - timeStart) + " ms");
 	}
 
-	private static void show(Day9Node lastNode, Day9Node rootNode) {
-		String toPrint = rootNode.getValue() + "";
+	private static void showAllPlacedMarbles(Day9Node lastNode, Day9Node rootNode, int currentPlayer) {
+		String toPrint = "[" + currentPlayer + "] " + rootNode.getValue() + "";
 		Day9Node nodeRead = rootNode.getNext();
 		if (lastNode.equals(nodeRead)) {
-			toPrint += ",(" + nodeRead.getValue() + ")";
+			toPrint += " (" + nodeRead.getValue() + ")";
 		} else {
-			toPrint += "," + nodeRead.getValue();
+			toPrint += " " + nodeRead.getValue();
 		}
 
 		while (!rootNode.getPrevious().equals(nodeRead)) {
 			nodeRead = nodeRead.getNext();
 			if (lastNode.equals(nodeRead)) {
-				toPrint += ",(" + nodeRead.getValue() + ")";
+				toPrint += " (" + nodeRead.getValue() + ")";
 			} else {
-				toPrint += "," + nodeRead.getValue();
+				toPrint += " " + nodeRead.getValue();
 			}
 
 		}
@@ -88,8 +88,14 @@ public class Day9 {
 }
 
 class Day9Node {
-	Day9Node previous;
-	Day9Node next;
+	private Day9Node previous;
+	private Day9Node next;
+	private int value;
+
+	public Day9Node(int valeur) {
+		super();
+		this.value = valeur;
+	}
 
 	public Day9Node getPrevious() {
 		return previous;
@@ -105,13 +111,6 @@ class Day9Node {
 
 	public void setNext(Day9Node next) {
 		this.next = next;
-	}
-
-	int value;
-
-	public Day9Node(int valeur) {
-		super();
-		this.value = valeur;
 	}
 
 	public int getValue() {
