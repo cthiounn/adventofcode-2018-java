@@ -1,16 +1,36 @@
 package aoc;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Day9 {
 
 	public static void main(String[] args) {
 		long timeStart = System.currentTimeMillis();
+		String input = "";
+		Path p = Paths.get("src/main/resources", "day9-input.file");
+		try {
+			input = Files.lines(p).findFirst().orElse(null);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		Pattern pattern = Pattern.compile("(\\d+) players; last marble is worth (\\d+) points");
+		Matcher matcher = pattern.matcher(input);
+		int players = 0; // = 448;
+		int baseMarble = 0; // = 71628;
+		while (matcher.find()) {
+			players = Integer.valueOf(matcher.group(1));
+			baseMarble = Integer.valueOf(matcher.group(2));
+		}
 		// 448 players; last marble is worth 71628 points
-		int players = 448;
+
 		Map<Integer, Long> gridScore = new HashMap<>();
-		int baseMarble = 71628;
 		int multiplyBy = 100;
 		int countMarble = 0;
 		int score = 0;
