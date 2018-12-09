@@ -5,8 +5,6 @@ import java.util.Map;
 
 public class Day9 {
 
-	static Day9Node lastNode;
-
 	public static void main(String[] args) {
 		// 448 players; last marble is worth 71628 points
 		int players = 448;
@@ -19,7 +17,7 @@ public class Day9 {
 		rootNode.setNext(rootNode);
 		rootNode.setPrevious(rootNode);
 
-		lastNode = rootNode;
+		Day9Node lastNode = rootNode;
 		for (countMarble = 1; countMarble <= lastMarble; countMarble++) {
 			score = 0;
 			currentPlayer = countMarble % players;
