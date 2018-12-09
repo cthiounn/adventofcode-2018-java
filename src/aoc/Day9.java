@@ -6,10 +6,12 @@ import java.util.Map;
 public class Day9 {
 
 	public static void main(String[] args) {
+		long timeStart = System.currentTimeMillis();
 		// 448 players; last marble is worth 71628 points
 		int players = 448;
 		Map<Integer, Long> gridScore = new HashMap<>();
-		int lastMarble = 71628 * 100;
+		int baseMarble = 71628;
+		int multiplyBy = 100;
 		int countMarble = 0;
 		int score = 0;
 		int currentPlayer;
@@ -18,7 +20,7 @@ public class Day9 {
 		rootNode.setPrevious(rootNode);
 
 		Day9Node lastNode = rootNode;
-		for (countMarble = 1; countMarble <= lastMarble; countMarble++) {
+		for (countMarble = 1; countMarble <= baseMarble * multiplyBy; countMarble++) {
 			score = 0;
 			currentPlayer = countMarble % players;
 			Day9Node nextNode = lastNode.getNext(); // +1
@@ -50,13 +52,16 @@ public class Day9 {
 			}
 
 			// show(lastNode, rootNode);
+			if (countMarble == baseMarble) {
+				long max = gridScore.entrySet().stream().max(Map.Entry.comparingByValue()).get().getValue();
+				System.out.println(max);
+			}
 		}
 
-		long max = 0;
-		for (Map.Entry<Integer, Long> entry : gridScore.entrySet()) {
-			max = Math.max(max, entry.getValue());
-		}
+		long max = gridScore.entrySet().stream().max(Map.Entry.comparingByValue()).get().getValue();
+
 		System.out.println(max);
+		System.out.println("runned time : " + (System.currentTimeMillis() - timeStart) + " ms");
 	}
 
 	private static void show(Day9Node lastNode, Day9Node rootNode) {
