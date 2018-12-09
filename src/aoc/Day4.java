@@ -19,12 +19,12 @@ public class Day4 {
 		long timeStart = System.currentTimeMillis();
 		List<String> input = Files.readAllLines(Paths.get("src/main/resources/day4-input.file"));
 		Collections.sort(input);
-		part1(input);
+		part1And2(input);
 		System.out.println("runned time : " + (System.currentTimeMillis() - timeStart) + " ms");
 
 	}
 
-	public static void part1(List<String> lines) throws ParseException {
+	public static void part1And2(List<String> lines) throws ParseException {
 		Map<String, Integer> map = new HashMap<>();
 		List<Guard> listGuard = new ArrayList<>();
 		for (String line : lines) {

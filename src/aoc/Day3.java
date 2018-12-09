@@ -13,12 +13,12 @@ public class Day3 {
 		long timeStart = System.currentTimeMillis();
 		List<String> input = Files.readAllLines(Paths.get("src/main/resources/day3-input.file"));
 
-		part1(input);
+		part1And2(input);
 		System.out.println("runned time : " + (System.currentTimeMillis() - timeStart) + " ms");
 
 	}
 
-	public static void part1(List<String> lines) {
+	public static void part1And2(List<String> lines) {
 		int numberOfConflict = 0;
 		Map<String, Integer> grid = new HashMap<>();
 		for (String line : lines) {
