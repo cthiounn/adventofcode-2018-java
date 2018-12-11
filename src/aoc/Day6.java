@@ -33,8 +33,8 @@ public class Day6 {
 			Pattern pattern = Pattern.compile("(\\d+), (\\d+)");
 			Matcher matcher = pattern.matcher(line);
 			while (matcher.find()) {
-				x = Integer.valueOf(matcher.group(1));
-				y = Integer.valueOf(matcher.group(2));
+				x = Integer.parseInt(matcher.group(1));
+				y = Integer.parseInt(matcher.group(2));
 				maxX = Math.max(x, maxX);
 				maxY = Math.max(y, maxY);
 			}

@@ -24,26 +24,16 @@ public class Day10 {
 			line = line.replaceAll(" ", "");
 			Pattern pattern = Pattern.compile("position=<(-?\\d+),(-?\\d+)>velocity=<(-?\\d+),(-?\\d+)>");
 			Matcher matcher = pattern.matcher(line);
-
 			while (matcher.find()) {
-				x = Integer.valueOf(matcher.group(1));
-				y = Integer.valueOf(matcher.group(2));
-				xVelocity = Integer.valueOf(matcher.group(3));
-				yVelocity = Integer.valueOf(matcher.group(4));
+				x = Integer.parseInt(matcher.group(1));
+				y = Integer.parseInt(matcher.group(2));
+				xVelocity = Integer.parseInt(matcher.group(3));
+				yVelocity = Integer.parseInt(matcher.group(4));
 
 			}
 			Vector v = new Vector(x, y, xVelocity, yVelocity);
 			listOfVector.add(v);
 		}
-
-		int maxCumulatedDistance = 99999;
-		// while (maxCumulatedDistance <= 10) {
-		// for (Vector vector : listOfVector) {
-		// vector.move(1000);
-		// maxCumulatedDistance = Math.max(maxCumulatedDistance,
-		// vector.getCumulatedDistanceWithOthers());
-		// }
-		// }
 		printGrid(listOfVector);
 		System.out.println("runned time : " + (System.currentTimeMillis() - timeStart) + " ms");
 	}
@@ -51,7 +41,6 @@ public class Day10 {
 	public static void printGrid(List<Vector> list) {
 		int maxX = 0;
 		int maxY = 0;
-
 		int minX = 90000;
 		int minY = 90000;
 		int maxXold = 90000;
@@ -61,7 +50,6 @@ public class Day10 {
 		Map<Integer, String> gridMetadata = new HashMap<>();
 		int loopIndex = 0;
 		while ((maxX <= maxXold && maxY <= maxYold) || first) {
-			System.out.println("l =" + loopIndex + "c=" + maxX + "*" + maxY);
 			loopIndex++;
 			if (!first) {
 				maxXold = maxX;
@@ -82,41 +70,37 @@ public class Day10 {
 				maxY = Math.max(maxY, vector.getY());
 				minX = Math.min(minX, vector.getX());
 				minY = Math.min(minY, vector.getY());
-				grid.put(vector.getX() + "*" + vector.getY(), loopIndex);
+				grid.put(vector.getX() + "*" + vector.getY() + "*" + loopIndex, 1);
 
 			}
-			System.out.println("medata=" + minX + "!" + minY + "!" + maxX + "!" + maxY);
 			gridMetadata.put(loopIndex, minX + "!" + minY + "!" + maxX + "!" + maxY);
-			System.out.println("l =" + loopIndex + "c=" + maxX + "*" + maxY);
 
 		}
-		for (int i = 0; i < 10; i++) {
-			System.out.println("+++++++++++++++++++++++++++++++++++++");
-			printGridByNumber(gridMetadata.get(loopIndex - i), grid, loopIndex - i);
-		}
-
+		loopIndex--; // loopIndex is at index where rectangle regrow once
+		printGridByNumber(gridMetadata.get(loopIndex), grid, loopIndex);
+		System.out.println(loopIndex);
 	}
 
 	private static void printGridByNumber(String metadata, Map<String, Integer> grid, int loopIndex) {
-		System.out.println("me=" + metadata);
-		int minX = Integer.valueOf(metadata.split("!")[0]);
-		int maxX = Integer.valueOf(metadata.split("!")[2]);
-		int minY = Integer.valueOf(metadata.split("!")[1]);
-		int maxY = Integer.valueOf(metadata.split("!")[3]);
-		for (int i = minX - 1; i < maxX + 2; i++) {
-			for (int j = minY - 1; j < maxY + 2; j++) {
+		int minX = Integer.parseInt(metadata.split("!")[0]);
+		int maxX = Integer.parseInt(metadata.split("!")[2]);
+		int minY = Integer.parseInt(metadata.split("!")[1]);
+		int maxY = Integer.parseInt(metadata.split("!")[3]);
+		for (int j = minY - 1; j < maxY + 2; j++) {
+			for (int i = minX - 1; i < maxX + 2; i++) {
+
 				if (j == maxY + 1) {
-					if (grid.get(i + "*" + j) == null) {
+					if (grid.get(i + "*" + j + "*" + loopIndex) == null) {
 						System.out.println(".");
-					} else if (grid.get(i + "*" + j) == loopIndex) {
+					} else if (grid.get(i + "*" + j + "*" + loopIndex).intValue() == 1) {
 						System.out.println("#");
 					} else {
 						System.out.println(".");
 					}
 				} else {
-					if (grid.get(i + "*" + j) == null) {
+					if (grid.get(i + "*" + j + "*" + loopIndex) == null) {
 						System.out.print(".");
-					} else if (grid.get(i + "*" + j) == loopIndex) {
+					} else if (grid.get(i + "*" + j + "*" + loopIndex).intValue() == 1) {
 						System.out.print("#");
 					} else {
 						System.out.print(".");
@@ -133,9 +117,6 @@ class Vector {
 	int y;
 	int xVelocity;
 	int yVelocity;
-	String label = "#";
-	static List<Vector> listOfVector = new ArrayList<>();
-	int cumulatedDistanceWithOthers = 99999;
 
 	public Vector(int x, int y, int xVelocity, int yVelocity) {
 		super();
@@ -143,7 +124,6 @@ class Vector {
 		this.y = y;
 		this.xVelocity = xVelocity;
 		this.yVelocity = yVelocity;
-		listOfVector.add(this);
 	}
 
 	public int getX() {
@@ -178,42 +158,11 @@ class Vector {
 		this.yVelocity = yVelocity;
 	}
 
-	public String getLabel() {
-		return label;
-	}
-
-	public void setLabel(String label) {
-		this.label = label;
-	}
-
 	public void move(int i) {
 		for (int j = 0; j < i; j++) {
 			x += xVelocity;
 			y += yVelocity;
 		}
-		int dist = 0;
-//		for (Vector vector : listOfVector) {
-//			dist += calculateManhattanDistance(vector);
-//		}
-//		setCumulatedDistanceWithOthers(dist);
-	}
 
-	public int getCumulatedDistanceWithOthers() {
-		return cumulatedDistanceWithOthers;
 	}
-
-	public void setCumulatedDistanceWithOthers(int cumulatedDistanceWithOthers) {
-		this.cumulatedDistanceWithOthers = cumulatedDistanceWithOthers;
-	}
-
-	public int calculateManhattanDistance(Vector o) {
-		return Math.abs(x - o.getX()) + Math.abs(y - o.getY());
-	}
-
-	@Override
-	public String toString() {
-		return "Vector [x=" + x + ", y=" + y + ", xVelocity=" + xVelocity + ", yVelocity=" + yVelocity + ", label="
-				+ label + ", cumulatedDistanceWithOthers=" + cumulatedDistanceWithOthers + "]";
-	}
-
 }

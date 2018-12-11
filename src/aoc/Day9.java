@@ -25,8 +25,8 @@ public class Day9 {
 		int players = 0; // = 448;
 		int baseMarble = 0; // = 71628;
 		while (matcher.find()) {
-			players = Integer.valueOf(matcher.group(1));
-			baseMarble = Integer.valueOf(matcher.group(2));
+			players = Integer.parseInt(matcher.group(1));
+			baseMarble = Integer.parseInt(matcher.group(2));
 		}
 		// 448 players; last marble is worth 71628 points
 

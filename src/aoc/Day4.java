@@ -47,7 +47,7 @@ public class Day4 {
 		for (Map.Entry<String, Integer> entry : map.entrySet()) {
 			if (maxSleepByMinute < entry.getValue() && entry.getKey().contains(idSleepiestGuardFinal + SEPARATOR)) {
 				maxSleepByMinute = entry.getValue();
-				maxMinForSleepiestGuard = Integer.valueOf(entry.getKey().split(SEPARATOR)[1]);
+				maxMinForSleepiestGuard = Integer.parseInt(entry.getKey().split(SEPARATOR)[1]);
 			}
 			if (maxMaxSleepByMinute < entry.getValue()) {
 				maxMaxSleepByMinute = entry.getValue();
@@ -55,8 +55,8 @@ public class Day4 {
 			}
 		}
 		System.out.println((idSleepiestGuard * maxMinForSleepiestGuard));
-		System.out.println((Integer.valueOf(resultPart2ToParse.split(SEPARATOR)[0])
-				* Integer.valueOf(resultPart2ToParse.split(SEPARATOR)[1])));
+		System.out.println((Integer.parseInt(resultPart2ToParse.split(SEPARATOR)[0])
+				* Integer.parseInt(resultPart2ToParse.split(SEPARATOR)[1])));
 	}
 
 	public static void parseLine(String str, List<Guard> listGuards, Map<String, Integer> minutes)
@@ -65,7 +65,7 @@ public class Day4 {
 		String date = data[0].substring(1);
 		String info = data[1];
 		if (info.contains("Guard")) {
-			final int id = Integer.valueOf(info.split("#")[1].split(" ")[0]);
+			final int id = Integer.parseInt(info.split("#")[1].split(" ")[0]);
 			Guard suspect = listGuards.stream().filter(g -> g.getId() == id).findFirst().orElse(null);
 			if (suspect != null) {
 				listGuards.remove(suspect);

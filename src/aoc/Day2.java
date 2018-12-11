@@ -25,7 +25,7 @@ public class Day2 {
 			Map<String, Integer> map = new HashMap<>();
 			for (int i = 0; i < line.length(); i++) {
 				if (null == map.get(line.charAt(i) + "")) {
-					map.put(line.charAt(i) + "", new Integer(1));
+					map.put(line.charAt(i) + "", 1);
 				} else {
 					Integer count = map.get(line.charAt(i) + "");
 					map.put(line.charAt(i) + "", count + 1);
@@ -60,8 +60,8 @@ public class Day2 {
 		int index2 = 0;
 		for (Map.Entry<String, Integer> entry : map2.entrySet()) {
 			if (entry.getValue() == 1) {
-				index1 = Integer.valueOf(entry.getKey().split("!")[0]);
-				index2 = Integer.valueOf(entry.getKey().split("!")[1]);
+				index1 = Integer.parseInt(entry.getKey().split("!")[0]);
+				index2 = Integer.parseInt(entry.getKey().split("!")[1]);
 			}
 		}
 		for (int i = 0; i < lines.get(index1).length(); i++) {

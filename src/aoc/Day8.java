@@ -25,7 +25,7 @@ public class Day8 {
 		String[] list = input.split(" ");
 
 		for (int i = 0; i < list.length; i++) {
-			listIntParsed.add(Integer.valueOf(list[i]));
+			listIntParsed.add(Integer.parseInt(list[i]));
 			listString.add(list[i]);
 		}
 		while (!listIntParsed.isEmpty()) {
@@ -63,12 +63,12 @@ public class Day8 {
 			System.out.println(listString.remove(0).replaceAll("#", ""));
 		} else {
 			String first = listString.remove(0);
-			int nbNode = Integer.valueOf(first);
-			int nbMeta = Integer.valueOf(listString.remove(0));
+			int nbNode = Integer.parseInt(first);
+			int nbMeta = Integer.parseInt(listString.remove(0));
 			if (nbNode == 0) {
 				int sumTerminalNode = 0;
 				for (int i = 0; i < nbMeta; i++) {
-					sumTerminalNode += Integer.valueOf(listString.remove(0));
+					sumTerminalNode += Integer.parseInt(listString.remove(0));
 				}
 				bufferPrefix2.add("#" + sumTerminalNode);
 				listString.addAll(0, bufferPrefix2);
@@ -77,10 +77,10 @@ public class Day8 {
 				int sumNode = 0;
 				ArrayList<Integer> valueChildNode = new ArrayList<>();
 				for (int i = 0; i < nbNode; i++) { // readValue node
-					valueChildNode.add(Integer.valueOf(listString.remove(0).replace("#", "")));
+					valueChildNode.add(Integer.parseInt(listString.remove(0).replace("#", "")));
 				}
 				for (int i = 0; i < nbMeta; i++) {
-					int index = Integer.valueOf(listString.remove(0));
+					int index = Integer.parseInt(listString.remove(0));
 					if (index <= valueChildNode.size()) {
 						sumNode += valueChildNode.get(index - 1);
 					}
