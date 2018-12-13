@@ -12,7 +12,8 @@ import java.util.Map;
 
 public class Day13 {
 
-	static List<Cart> listOfCart = new ArrayList<>();
+	private static List<Cart> listOfCart = new ArrayList<>();
+	private static boolean first = false;
 
 	public static void main(String[] args) throws IOException {
 		long timeStart = System.currentTimeMillis();
@@ -20,9 +21,10 @@ public class Day13 {
 		Map<String, String> grid = new HashMap<>();
 		initGrid(input, grid);
 		while (listOfCart.size() != 1) {
-			removeCrash();
 			moveCart(grid);
+			removeCrash();
 		}
+		System.out.println(listOfCart.get(0).getX() + "," + listOfCart.get(0).getY());
 		System.out.println("runned time : " + (System.currentTimeMillis() - timeStart) + " ms");
 	}
 
@@ -33,6 +35,10 @@ public class Day13 {
 				listOfCartNew.add(cart);
 			} else {
 				Cart.allCart.remove(cart);
+				if (!first) {
+					first = true;
+					System.out.println(cart.getX() + "," + cart.getY());
+				}
 			}
 		}
 		listOfCart.clear();
@@ -59,9 +65,7 @@ public class Day13 {
 				return -1;
 			}
 		});
-		if (listOfCart.size() == 1) {
-			System.out.println(listOfCart.get(0));
-		}
+
 		for (Cart cart : listOfCart) {
 			cart.move(grid);
 		}
@@ -159,46 +163,39 @@ class Cart {
 	}
 
 	public void move(Map<String, String> grid) {
-		for (Cart cart : allCart) {
-			if (cart.getId() == id) {
-				// skip
-			} else {
-				this.detectCartCrashed(cart);
-			}
-		}
-		if (isCrashed()) { // dont move
 
+		if (isCrashed()) { // dont move
 		} else {
-			// System.out.println("moving =" + this);
 			String track = "";
-			if (facing == 0) {// 0 left 1 up 2 right 3 down
+			switch (facing) {
+			case 0:
 				if (grid.get((x - 1) + "!" + y) != null) {
 					track = grid.get((x - 1) + "!" + y);
 					x = x - 1;
 				}
-			} else if (facing == 1) {
+				break;
+			case 1:
 				if (grid.get(x + "!" + (y - 1)) != null) {
 					track = grid.get(x + "!" + (y - 1));
 					y = y - 1;
 				}
-			} else if (facing == 2) {
+				break;
+			case 2:
 				if (grid.get((x + 1) + "!" + y) != null) {
 					track = grid.get((x + 1) + "!" + y);
 					x = x + 1;
 				}
-			} else if (facing == 3) {
+				break;
+			case 3:
 				if (grid.get(x + "!" + (y + 1)) != null) {
 					track = grid.get(x + "!" + (y + 1));
 					y = y + 1;
 				}
+				break;
+			default:
+				break;
 			}
-			// int nextDirection = 0; // 0 left 1 straight 2right
-			// int facing = 0; // 0 left 1 up 2 right 3 down
 			if ("+".equals(track)) {
-//			if (id == 1) {
-//				System.out.println("cross-section; " + id);
-//				System.out.println("begin cross" + this);
-//			}
 				if (3 == facing) {
 					// down
 					if (nextDirection == 0) {
@@ -239,12 +236,7 @@ class Cart {
 				// steer
 				nextDirection = (nextDirection + 1);
 				nextDirection %= 3;
-//			if (id == 1) {
-//				System.out.println("end cross" + this);
-//			}
-			}
-
-			if ("/".equals(track)) {
+			} else if ("/".equals(track)) {
 				if (3 == facing) {
 					// down to left
 					facing = 0;
@@ -259,9 +251,7 @@ class Cart {
 					facing = 3;
 				}
 
-			}
-			// int facing = 0; // 0 left 1 up 2 right 3 down
-			if ("\\".equals(track)) {
+			} else if ("\\".equals(track)) {
 				if (3 == facing) {
 					// down to right
 					facing = 2;
@@ -276,8 +266,13 @@ class Cart {
 					facing = 1;
 				}
 			}
-
-			// System.out.println("end moving =" + this);
+		}
+		for (Cart cart : allCart) {
+			if (cart.getId() == id) {
+				// skip
+			} else {
+				this.detectCartCrashed(cart);
+			}
 		}
 	}
 

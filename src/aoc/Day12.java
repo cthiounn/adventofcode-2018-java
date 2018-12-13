@@ -2,6 +2,8 @@ package aoc;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,83 +11,54 @@ public class Day12 {
 
 	public static void main(String[] args) throws IOException {
 		long timeStart = System.currentTimeMillis();
-		List<String> a = new ArrayList<>();
-		String toto = ".#..##..#.....######.....#....####.##.#.#...#...##.#...###..####.##.##.####..######......#..##.##.##";
-		a.add("#.... => .");
-		a.add(".##.# => #");
-		a.add("#..## => .");
-		a.add("....# => .");
-		a.add("###.# => #");
-		a.add("...#. => #");
-		a.add("#...# => #");
-		a.add("#.### => .");
-		a.add(".#... => #");
-		a.add("...## => .");
-		a.add("..### => .");
-		a.add("####. => .");
-		a.add("##.## => .");
-		a.add("..##. => .");
-		a.add(".#.## => #");
-		a.add("#..#. => #");
-		a.add("..... => .");
-		a.add("#.#.. => .");
-		a.add("##.#. => #");
-		a.add(".#### => #");
-		a.add("##### => .");
-		a.add("#.##. => #");
-		a.add(".#..# => #");
-		a.add("##... => .");
-		a.add("..#.# => #");
-		a.add("##..# => #");
-		a.add(".###. => .");
-		a.add(".#.#. => #");
-		a.add("#.#.# => #");
-		a.add("###.. => .");
-		a.add(".##.. => .");
-		a.add("..#.. => .");
-		String pat = "";
+		List<String> inputFile = Files.readAllLines(Paths.get("src/main/resources/day12-input.file"));
+		String input = (inputFile.remove(0)).split(" ")[2];
+		inputFile.remove(0); // blank line
+		List<String> listOfPatterns = new ArrayList<>();
+		for (String line : inputFile) {
+			listOfPatterns.add(line);
+
+		}
+		int numberOfiteration = 1000;
+		int sizeOfSample = 100;
+		String patternToMatch = "";
 		String replacement = "";
 		int numberOfPlant = 0;
-		int oldNumber = numberOf(toto);
+		int oldNumber = numberOf(input);
 		List<Integer> listOfDiffNumber = new ArrayList<>();
-		for (int j = 0; j < 1000; j++) {
+		for (int j = 0; j < numberOfiteration; j++) {
 			String stringWork = "";
-			toto = "...." + toto + "....";
-			for (int i = 2; i < toto.length() - 2; i++) {
-				String substitute = toto.charAt(i) + "";
-				for (String line : a) {
-					pat = line.split(" ")[0];
+			input = "...." + input + "....";
+			for (int i = 2; i < input.length() - 2; i++) {
+				String potTargeted = input.charAt(i) + "";
+				for (String line : listOfPatterns) {
+					patternToMatch = line.split(" ")[0];
 					replacement = line.split(" ")[2];
-					if ((toto.substring(i - 2, i + 3)).equals(pat)) {
-						substitute = replacement;
+					if ((input.substring(i - 2, i + 3)).equals(patternToMatch)) {
+						potTargeted = replacement;
 					}
 				}
-				stringWork += substitute;
+				stringWork += potTargeted;
 			}
-			toto = stringWork;
-			numberOfPlant = numberOf(toto); // new
+			input = stringWork;
+			numberOfPlant = numberOf(input); // new
 			int deltaNbPlant = numberOfPlant - oldNumber;
 			oldNumber = numberOfPlant; // old <- new
-			if (j >= 900) {
+			if (j >= numberOfiteration - sizeOfSample) {
 				listOfDiffNumber.add(deltaNbPlant);
 			}
-			if (j == 19) {
+			if (j == 19) { // part 1 -gen20
 				System.out.println(numberOfPlant);
 			}
 		}
-		System.out.println(numberOfPlant);
-		long sum = listOfDiffNumber.stream().mapToInt(i -> i.intValue()).sum();
-		System.out.println(sum);
-		double meand = new Double(sum);
+
+		long sumGrowth = listOfDiffNumber.stream().mapToInt(i -> i.intValue()).sum();
+		double meand = new Double(sumGrowth);
 		meand = meand / listOfDiffNumber.size();
-		System.out.println(meand);
-		BigDecimal mean = new BigDecimal(meand);
-		System.out.println(mean);
-		BigDecimal bigNumber = new BigDecimal("50000000000");
-		bigNumber.subtract(new BigDecimal("1000"));
-		System.out.println(bigNumber);
-		BigDecimal forecast = (bigNumber.multiply(mean)).add(new BigDecimal(numberOfPlant));
-		System.out.println(bigNumber.multiply(mean));
+		BigDecimal meanGrowth = new BigDecimal(meand);
+		BigDecimal targetNumberIteration = new BigDecimal("50000000000");
+		targetNumberIteration = targetNumberIteration.subtract(new BigDecimal(numberOfiteration + ""));
+		BigDecimal forecast = (targetNumberIteration.multiply(meanGrowth)).add(new BigDecimal(numberOfPlant));
 		System.out.println(forecast);
 		System.out.println("runned time : " + (System.currentTimeMillis() - timeStart) + " ms");
 	}
