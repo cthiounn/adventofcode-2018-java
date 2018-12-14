@@ -1,20 +1,11 @@
 package aoc;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 public class Day14 {
 
-	static List<Cart> listOfCart = new ArrayList<>();
-	static Day14Node current0;
-	static Day14Node current1;
-
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		long timeStart = System.currentTimeMillis();
 		int input = 540391;
-		String searchString = input + "";
-		long iteration = input * 14; // 13
+		long iteration = input * 100;
 		int index = 0;
 		Day14Node node0 = new Day14Node(3, index++);
 		Day14Node node1 = new Day14Node(7, index++);
@@ -24,12 +15,11 @@ public class Day14 {
 		node1.setPrevious(node0);
 		int sumValue = 0;
 		String sumString = "";
-		current0 = node0;
-		current1 = node1;
+		Day14Node current0 = node0;
+		Day14Node current1 = node1;
 		Day14Node save0;
 		Day14Node save1;
 		for (long j = 0; j < iteration + 10; j++) {
-			// System.out.println("----------------------- LOOP = " + j);
 			save0 = current0;
 			save1 = current1;
 			sumValue = current0.getValue() + current1.getValue();
@@ -49,7 +39,6 @@ public class Day14 {
 			for (int i = 0; i < (save1.getValue() + 1); i++) {
 				current1 = current1.getNext();
 			}
-
 			// showAllPlacedMarbles(current0, current1, node0);
 		}
 		Day14Node nodeResult = node0.move(input);
@@ -58,14 +47,37 @@ public class Day14 {
 			nodeResult = nodeResult.getNext();
 		}
 		System.out.println();
-		System.out.println("size=" + node0.getPrevious().getIndex());
-		System.out.println(searchSubChain(node0, "51589"));
-		System.out.println(searchSubChain(node0, "01245"));
-		System.out.println(searchSubChain(node0, "92510"));
-		System.out.println(searchSubChain(node0, "59414"));
+		// System.out.println("size=" + node0.getPrevious().getIndex());
+		// System.out.println(searchSubChain(node0, "51589"));
+		// System.out.println(searchSubChain(node0, "01245"));
+		// System.out.println(searchSubChain(node0, "92510"));
+		// System.out.println(searchSubChain(node0, "59414"));
 		System.out.println(searchSubChain(node0, input + ""));
-//		System.out.println(searchSubChain(node0, searchString));
+		// System.out.println(searchSubChain(node0, searchString));
 		System.out.println("runned time : " + (System.currentTimeMillis() - timeStart) + " ms");
+	}
+
+	private static int searchSubChain(Day14Node rootNode, String input) {
+		Day14Node nodeRead = rootNode.getNext();
+		while (!rootNode.getPrevious().equals(nodeRead)) {
+			String str = nextI(nodeRead, input.length());
+			if (str.equals(input)) {
+				break;
+			}
+			nodeRead = nodeRead.getNext();
+		}
+
+		return nodeRead.getIndex();
+	}
+
+	private static String nextI(Day14Node nodeRead, int i) {
+		String strReturn = "";
+		Day14Node nodeLoop = nodeRead;
+		for (int j = 0; j < i; j++) {
+			strReturn += nodeLoop.getValue();
+			nodeLoop = nodeLoop.getNext();
+		}
+		return strReturn;
 	}
 
 	private static void showAllPlacedMarbles(Day14Node lastNode, Day14Node lastNode2, Day14Node rootNode) {
@@ -99,47 +111,6 @@ public class Day14 {
 
 		}
 		System.out.println(toPrint);
-	}
-
-//	private static String showChain(Day14Node rootNode) {
-//		String toPrint = "";
-//		toPrint += "" + rootNode.getValue();
-//		Day14Node nodeRead = rootNode.getNext();
-//
-//		while (!rootNode.getPrevious().equals(nodeRead)) {
-//			toPrint += "" + nodeRead.getValue();
-//
-//		}
-//		return toPrint;
-//	}
-
-	private static int searchSubChain(Day14Node rootNode, String input) {
-//		List<Integer> inputInteger = new ArrayList<>();
-//		for (int i = 0; i < input.length(); i++) {
-//			inputInteger.add(Integer.parseInt(input.charAt(i) + ""));
-//		}
-//
-//		boolean find = false;
-		Day14Node nodeRead = rootNode.getNext();
-		while (!rootNode.getPrevious().equals(nodeRead)) {
-			String str = nextI(nodeRead, input.length());
-			if (str.equals(input)) {
-				break;
-			}
-			nodeRead = nodeRead.getNext();
-		}
-
-		return nodeRead.getIndex();
-	}
-
-	private static String nextI(Day14Node nodeRead, int i) {
-		String inputInteger = "";
-		Day14Node nodeLoop = nodeRead;
-		for (int j = 0; j < i; j++) {
-			inputInteger += nodeLoop.getValue();
-			nodeLoop = nodeLoop.getNext();
-		}
-		return inputInteger;
 	}
 }
 
