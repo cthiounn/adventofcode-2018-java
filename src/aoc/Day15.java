@@ -2,7 +2,9 @@ package aoc;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -18,18 +20,18 @@ public class Day15 {
 	public static void main(String[] args) throws IOException {
 		long timeStart = System.currentTimeMillis();
 
-//		runDay15("day15-test1.file");// 590,47,27730
-//		runDay15("day15-test2.file");// 982 ,37 ,36334
-//		runDay15("day15-test3.file");// 859,46,39514
-//		runDay15("day15-test4.file");// 793,35,27755
-//		runDay15("day15-test5.file");// 536,54,28944
-//		runDay15("day15-test6.file");// 937,20,18740
-//		runDay15("day15-inputO1.file");//
-//		runDay15("day15-inputO2.file"); // 201638
-//		runDay15("day15-inputO3.file");// 195774
-//		runDay15("day15-inputO4.file");// 214731
-//		runDay15("day15-inputO5.file");// 261855 95
-//		runDay15("day15-inputO6.file");// 2812, 68 
+		runDay15("day15-test1.file");// 590,47,27730
+		runDay15("day15-test2.file");// 982 ,37 ,36334
+		runDay15("day15-test3.file");// 859,46,39514
+		runDay15("day15-test4.file");// 793,35,27755
+		runDay15("day15-test5.file");// 536,54,28944
+		runDay15("day15-test6.file");// 937,20,18740
+		runDay15("day15-inputO1.file");//
+		runDay15("day15-inputO2.file"); // 201638
+		runDay15("day15-inputO3.file");// 195774
+		runDay15("day15-inputO4.file");// 214731
+		runDay15("day15-inputO5.file");// 261855 95
+		runDay15("day15-inputO6.file");// 2812, 68
 		runDay15("day15-input.file");//
 		System.out.println("runned time : " + (System.currentTimeMillis() - timeStart) + " ms");
 	}
@@ -45,7 +47,15 @@ public class Day15 {
 		boolean finishBreaked = false;
 		while (!finishBreaked) {
 //			System.out.println("Begin of turn " + round);
+//			System.out.println();
+//			if (round == 13) {
 //			printDataViz(grid);
+//				// break;
+//			}
+//			if (round == 14) {
+//				break;
+//			}
+
 			listOfPlayers = listOfPlayers.stream().sorted().collect(Collectors.toList());
 			for (Player player : listOfPlayers) {
 				if (isFinished(Player.listOfPlayer)) {
@@ -72,16 +82,29 @@ public class Day15 {
 		System.out.println("----- END " + inputFile + "-----");
 	}
 
-	private static void printDataViz(Map<String, String> grid) {
+	private static void printDataViz(Map<String, String> grid) throws IOException {
+
+		Path path = Paths.get("src/main/resources/output.txt");
+		String toWrite = "";
+		toWrite += ";";
+		byte[] strToBytes = toWrite.getBytes();
+		Files.write(path, strToBytes, StandardOpenOption.APPEND);
+
 		int sizeLine = Integer.parseInt(metadata.split("!")[0]);
 		int numberLine = Integer.parseInt(metadata.split("!")[1]);
 		for (int i = 0; i < numberLine; i++) {
+			toWrite = "";
 			for (int j = 0; j < sizeLine; j++) {
 				if (grid.get(i + "!" + j) != null) {
 					System.out.print(grid.get(i + "!" + j));
+					toWrite += grid.get(i + "!" + j);
+
 				}
 				if (j == sizeLine - 1) {
 					System.out.println();
+					toWrite += ";";
+					strToBytes = toWrite.getBytes();
+					Files.write(path, strToBytes, StandardOpenOption.APPEND);
 				}
 			}
 		}
@@ -231,14 +254,23 @@ class Player implements Comparable<Player> {
 			if (reachableTiles.isEmpty()) {
 				return coordinateToReturn;
 			} else {
-//				if (reachableTiles.size() > 1) {
-//					System.out.println("--------------------");
-//					for (String string : reachableTiles) {
-//						System.out.println(string);
-//					}
-//
-//					System.out.println("c=" + reachableTiles.get(0));
-//				}
+				if (reachableTiles.size() > 1) {
+					String minCo = "";
+					int xMin = 99;
+					int yMin = 99;
+					for (String string : reachableTiles) {
+						int xString = Integer.parseInt(string.split("!")[0]);
+						int yString = Integer.parseInt(string.split("!")[1].split("#")[0]);
+						String other = string.split("!")[1].split("#")[1];
+						if ((xMin > xString) || (xString == xMin && yMin > yString)) {
+							minCo = xString + "!" + yString + "#" + other;
+							xMin = xString;
+							yMin = yString;
+						}
+					}
+					reachableTiles.clear();
+					reachableTiles.add(minCo);
+				}
 				String chosenPoint = reachableTiles.get(0);
 				List<String> listOfStep = pathfindingNextStep(chosenPoint, grid);
 				Map<String, Integer> playerAndDist = new HashMap<>();
@@ -390,7 +422,6 @@ class Player implements Comparable<Player> {
 				break;
 			}
 		}
-		reachable = reachable.stream().sorted().collect(Collectors.toList());
 		return reachable;
 
 	}
