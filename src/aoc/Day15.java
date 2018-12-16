@@ -11,6 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 public class Day15 {
@@ -20,65 +21,83 @@ public class Day15 {
 	public static void main(String[] args) throws IOException {
 		long timeStart = System.currentTimeMillis();
 
-		runDay15("day15-test1.file");// 590,47,27730
-		runDay15("day15-test2.file");// 982 ,37 ,36334
-		runDay15("day15-test3.file");// 859,46,39514
-		runDay15("day15-test4.file");// 793,35,27755
-		runDay15("day15-test5.file");// 536,54,28944
-		runDay15("day15-test6.file");// 937,20,18740
-		runDay15("day15-inputO1.file");//
-		runDay15("day15-inputO2.file"); // 201638
-		runDay15("day15-inputO3.file");// 195774
-		runDay15("day15-inputO4.file");// 214731
-		runDay15("day15-inputO5.file");// 261855 95
-		runDay15("day15-inputO6.file");// 2812, 68
-		runDay15("day15-input.file");//
+//		runDay15("day15-test1.file", false);// 590,47,27730
+//		runDay15("day15-test2.file", false);// 982 ,37 ,36334
+//		runDay15("day15-test3.file", false);// 859,46,39514
+//		runDay15("day15-test4.file", false);// 793,35,27755
+//		runDay15("day15-test5.file", false);// 536,54,28944
+//		runDay15("day15-test6.file", false);// 937,20,18740
+//		runDay15("day15-inputO1.file", false);//
+//		runDay15("day15-inputO2.file", false); // 201638
+//		runDay15("day15-inputO3.file", false);// 195774
+//		runDay15("day15-inputO4.file", false);// 214731
+//		runDay15("day15-inputO5.file", false);// 261855 95 ??
+//		runDay15("day15-inputO6.file", false);// 2812, 68
+		runDay15("day15-input.file", true);//
 		System.out.println("runned time : " + (System.currentTimeMillis() - timeStart) + " ms");
 	}
 
-	private static void runDay15(String inputFile) throws IOException {
+	private static void runDay15(String inputFile, boolean withPartTwo) throws IOException {
 		System.out.println("----- BEGIN " + inputFile + "-----");
-		Player.listOfPlayer.clear();
-		List<String> input = Files.readAllLines(Paths.get("src/main/resources/" + inputFile));
-		List<Player> listOfPlayers = new ArrayList<>();
-		Map<String, String> grid = new HashMap<>();
-		initGrid(input, grid, listOfPlayers);
+		int attackPowerElf = 0;
+		boolean finishPartTwo = false;
 		int round = 0;
-		boolean finishBreaked = false;
-		while (!finishBreaked) {
+		List<Player> listOfPlayers = new ArrayList<>();
+		while ((withPartTwo && !finishPartTwo) || (!withPartTwo && attackPowerElf == 1)) {
+			attackPowerElf++;
+			Player.listOfPlayer.clear();
+			Player.numberElfDied = 0;
+			List<String> input = Files.readAllLines(Paths.get("src/main/resources/" + inputFile));
+			listOfPlayers = new ArrayList<>();
+			Map<String, String> grid = new HashMap<>();
+			initGrid(input, grid, listOfPlayers);
+			if (withPartTwo) {
+				for (Player player : listOfPlayers) {
+					player.setAttack(player.isElf() ? attackPowerElf : player.getAttack());
+				}
+				for (Player player : Player.listOfPlayer) {
+					player.setAttack(player.isElf() ? attackPowerElf : player.getAttack());
+				}
+			}
+			round = 0;
+			boolean finishBreaked = false;
+			while (!finishBreaked) {
 //			System.out.println("Begin of turn " + round);
-//			System.out.println();
-//			if (round == 13) {
 //			printDataViz(grid);
-//				// break;
-//			}
-//			if (round == 14) {
-//				break;
-//			}
+				listOfPlayers = listOfPlayers.stream().sorted().collect(Collectors.toList());
+				for (Player player : listOfPlayers) {
+					if (isFinished(Player.listOfPlayer)) {
+						finishBreaked = true;
+						break;
+					}
+//				System.out.println("Turn=" + player);
+					player.move(grid);
+					player.attack(grid);
 
-			listOfPlayers = listOfPlayers.stream().sorted().collect(Collectors.toList());
-			for (Player player : listOfPlayers) {
-				if (isFinished(Player.listOfPlayer)) {
-					finishBreaked = true;
+				}
+				if (withPartTwo && Player.numberElfDied > 0) {
+					// gameover
+					System.out.println("The elves have died with an attackPower=" + attackPowerElf + " ");
 					break;
 				}
-//				System.out.println("Turn=" + player);
-				player.move(grid);
-				player.attack(grid);
-
+				// System.out.println("End of turn " + round);
+				listOfPlayers.clear();
+				listOfPlayers.addAll(Player.listOfPlayer);
+				if (finishBreaked) {
+					if (withPartTwo) {
+						finishPartTwo = true;
+					}
+					break;
+				}
+				round++;
 			}
-			// System.out.println("End of turn " + round);
-			listOfPlayers.clear();
-			listOfPlayers.addAll(Player.listOfPlayer);
-			if (finishBreaked) {
-				break;
-			}
-			round++;
 		}
+
 		int hpLeft = listOfPlayers.stream().mapToInt(m -> m.getHp()).sum();
 		System.out.print("sumHp=" + hpLeft);
 		System.out.print(" round=" + round);
 		System.out.println(" output=" + round * hpLeft);
+		System.out.println(" attackPowerElf=" + attackPowerElf);
 		System.out.println("----- END " + inputFile + "-----");
 	}
 
@@ -162,6 +181,7 @@ class Player implements Comparable<Player> {
 	int hp = 200;
 	int attack = 3;
 	int roundPlayed = 0;
+	static int numberElfDied = 0;
 	boolean dead = false;
 	boolean elf;
 
@@ -423,76 +443,6 @@ class Player implements Comparable<Player> {
 			}
 		}
 		return reachable;
-
-	}
-
-	private String searchBestMove(Map<String, String> grid) {
-		String coordinateToReturn = x + "!" + y;
-		List<Player> subListOfPlayer = isElf()
-				? listOfPlayer.stream().filter(m -> !m.isElf()).sorted().collect(Collectors.toList())
-				: listOfPlayer.stream().filter(m -> m.isElf()).sorted().collect(Collectors.toList());
-
-//		System.out.println("--------------------------");
-//		System.out.println(this);
-//		for (Player player : subListOfPlayer) {
-//			System.out.println(player);
-//		}
-		Map<String, Integer> playerAndDist = new HashMap<>();
-		for (Player player : subListOfPlayer) {
-			List<String> list = new ArrayList<>();
-			list.addAll(pathfindingNextStep(player.getPos(), grid));
-//			list.addAll(pathfindingNextStep(player.getPos1(), grid));
-//			list.addAll(pathfindingNextStep(player.getPos2(), grid));
-//			list.addAll(pathfindingNextStep(player.getPos3(), grid));
-//			list.addAll(pathfindingNextStep(player.getPos4(), grid));
-//			System.out.println(list);
-
-			if (!list.isEmpty()) {
-				coordinateToReturn = "";
-				for (String string : list) {
-					// if (playerAndDist.get(string.split("#")[0]) == null
-					// || playerAndDist.get(string.split("#")[0]) >
-					// Integer.parseInt(string.split("#")[1])) {
-					playerAndDist.put(string.split("#")[0] + "/" + player.getPos(),
-							Integer.parseInt(string.split("#")[1]));
-					// }
-				}
-			}
-		}
-		int min = 100;
-//		System.out.println("-----------------------------------------");
-		List<Entry<String, Integer>> list = new ArrayList<>(playerAndDist.entrySet());
-		list.sort(Entry.comparingByValue());
-
-		Map<String, Integer> result = new LinkedHashMap<>();
-		for (Entry<String, Integer> entry : list) {
-			result.put(entry.getKey(), entry.getValue());
-		}
-		for (Map.Entry<String, Integer> entry : result.entrySet()) {
-//			if (id == 7) {
-//			System.out.println("k=" + entry.getKey() + "||" + entry.getValue());
-//			}
-			if (min > entry.getValue()) {
-				coordinateToReturn = entry.getKey();
-				min = entry.getValue();
-			} else if (min == entry.getValue()) {
-				int xTarget = Integer.parseInt(coordinateToReturn.split("/")[1].split("!")[0]);
-				int yTarget = Integer.parseInt(coordinateToReturn.split("/")[1].split("!")[1]);
-				int xCo = Integer.parseInt(coordinateToReturn.split("/")[0].split("!")[0]);
-				int yCo = Integer.parseInt(coordinateToReturn.split("/")[0].split("!")[1]);
-				int xEn = Integer.parseInt(entry.getKey().split("/")[0].split("!")[0]);
-				int yEn = Integer.parseInt(entry.getKey().split("/")[0].split("!")[1]);
-				int xEnTarget = Integer.parseInt(entry.getKey().split("/")[1].split("!")[0]);
-				int yEnTarget = Integer.parseInt(entry.getKey().split("/")[1].split("!")[1]);
-				if ((xTarget > xEnTarget) || (xTarget == xEnTarget && yTarget >= yEnTarget)) {
-					if ((xCo > xEn) || (xCo == xEn && yCo > yEn)) {
-						coordinateToReturn = entry.getKey();
-					}
-				}
-			}
-		}
-//		System.out.println("c=" + coordinateToReturn);
-		return coordinateToReturn;
 	}
 
 	private List<String> pathfindingNextStep(String posEnd, Map<String, String> grid) {
@@ -619,6 +569,7 @@ class Player implements Comparable<Player> {
 				// System.out.println("attacking Player =" + gobelinToAttack);
 				gobelinToAttack.setHp(gobelinToAttack.getHp() - getAttack());
 				if (gobelinToAttack.getHp() <= 0) {
+					numberElfDied += gobelinToAttack.isElf() ? 1 : 0;
 					gobelinToAttack.setDead(true);
 					gobelinToAttack.move(grid); // remove from grid
 				}
