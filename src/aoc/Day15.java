@@ -11,7 +11,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 public class Day15 {
@@ -32,18 +31,18 @@ public class Day15 {
 //		runDay15("day15-inputO3.file", false);// 195774
 //		runDay15("day15-inputO4.file", false);// 214731
 //		runDay15("day15-inputO5.file", false);// 261855 95 ??
-//		runDay15("day15-inputO6.file", false);// 2812, 68
+//		runDay15("day15-inputO6.file", true);// 2812, 68
 		runDay15("day15-input.file", true);//
 		System.out.println("runned time : " + (System.currentTimeMillis() - timeStart) + " ms");
 	}
 
 	private static void runDay15(String inputFile, boolean withPartTwo) throws IOException {
-		System.out.println("----- BEGIN " + inputFile + "-----");
+//		System.out.println("----- BEGIN " + inputFile + "-----");
 		int attackPowerElf = 0;
 		boolean finishPartTwo = false;
 		int round = 0;
 		List<Player> listOfPlayers = new ArrayList<>();
-		while ((withPartTwo && !finishPartTwo) || (!withPartTwo && attackPowerElf == 1)) {
+		while ((withPartTwo && !finishPartTwo) || (!withPartTwo && attackPowerElf < 1)) {
 			attackPowerElf++;
 			Player.listOfPlayer.clear();
 			Player.numberElfDied = 0;
@@ -62,8 +61,8 @@ public class Day15 {
 			round = 0;
 			boolean finishBreaked = false;
 			while (!finishBreaked) {
-//			System.out.println("Begin of turn " + round);
-//			printDataViz(grid);
+//				System.out.println("Begin of turn " + round);
+				printDataViz(grid);
 				listOfPlayers = listOfPlayers.stream().sorted().collect(Collectors.toList());
 				for (Player player : listOfPlayers) {
 					if (isFinished(Player.listOfPlayer)) {
@@ -77,7 +76,7 @@ public class Day15 {
 				}
 				if (withPartTwo && Player.numberElfDied > 0) {
 					// gameover
-					System.out.println("The elves have died with an attackPower=" + attackPowerElf + " ");
+//					System.out.println("The elves have died with an attackPower=" + attackPowerElf + " ");
 					break;
 				}
 				// System.out.println("End of turn " + round);
