@@ -4,9 +4,18 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Day20 {
+
+	static String begin = "";
+	static String middle = "";
+	static String end = "";
+	static int posBeginRegex = 0;
+	static int posEndRegex = 0;
 
 	public static void main(String[] args) throws IOException {
 		long timeStart = System.currentTimeMillis();
@@ -83,42 +92,37 @@ public class Day20 {
 	}
 
 	private static List<String> unregexify2List(String string) {
-		List<String> allRegex = new ArrayList<>();
-		List<String> tempWork = new ArrayList<>();
-		int posBeginRegex = string.lastIndexOf("(");
-		int posEndRegex = (string.substring(posBeginRegex)).indexOf(")");
-		tempWork = unregexifyList(string.substring(posBeginRegex, posBeginRegex + posEndRegex + 1));
-		for (String string2 : tempWork) {
-			String result = string.substring(0, posBeginRegex) + string2
-					+ string.substring(posBeginRegex + posEndRegex + 1);
-			if (result.contains("(")) {
-				allRegex.add(result);
-			} else if (result.length() >= (1000 - 2)) {
-				allRegex.add(result);
-			} else {
-				System.out.println("remove toto2");
-			}
-		}
-		return allRegex;
+		posBeginRegex = string.lastIndexOf("(");
+		posEndRegex = (string.substring(posBeginRegex)).indexOf(")");
+		begin = string.substring(0, posBeginRegex);
+		end = string.substring(posBeginRegex + posEndRegex + 1);
+		middle = string.substring(posBeginRegex, posBeginRegex + posEndRegex + 1);
+		return unregexifyList(middle).stream().map(m -> begin + m + end)
+				.filter(e -> e.replace("(", "").replace("|", "").replace(")", "").length() >= 1002)
+				.collect(Collectors.toList());
 	}
 
 	private static List<String> unregexifyAllList(String string) {
 		List<String> allRegex = new ArrayList<>();
-		List<String> tempWork = new ArrayList<>();
-		tempWork.add(string);
-		while (tempWork.stream().filter(e -> e.contains("(")).count() != 0) {
-			String current = tempWork.remove(0);
-			if (current.contains("(")) {
-				tempWork.addAll(unregexify2List(current));
-			} else {
-				if (current.length() >= (1000 - 2)) {
-					tempWork.add(current);
-				} else {
-					System.out.println("remove toto");
+		Map<String, String> tempWork2 = new HashMap<>();
+		Map<String, String> tempHashMap = new HashMap<>();
+		tempHashMap.put(string, "");
+		while (!tempHashMap.isEmpty()) {
+			System.out.println(tempHashMap.size());
+			tempWork2 = new HashMap<>();
+			for (Map.Entry<String, String> entry : tempHashMap.entrySet()) {
+				for (String string3 : unregexify2List(entry.getKey())) {
+					string3 = minify(string3);
+					if (!string3.contains("(") && string3.length() >= (1000 - 2) && !allRegex.contains(string3)) {
+						allRegex.add(string3);
+					} else if (tempHashMap.get(string3) == null && tempWork2.get(string3) == null) {
+						tempWork2.put(string3, "");
+					}
 				}
 			}
+			tempHashMap.clear();
+			tempHashMap.putAll(tempWork2);
 		}
-		allRegex.addAll(tempWork);
 		return allRegex;
 	}
 }
