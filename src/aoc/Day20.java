@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 public class Day20 {
 
+	static StringBuilder buff = new StringBuilder();
 	static String begin = "";
 	static String middle = "";
 	static String end = "";
@@ -23,7 +24,6 @@ public class Day20 {
 		input = minify(input);
 		System.out.println(unregexifyAll(input, false));
 		System.out.println(unregexifyAll(input, false).length() - 2);
-
 		System.out.println(unregexifyAllList(input).size());
 		System.out.println("runned time : " + (System.currentTimeMillis() - timeStart) + " ms");
 	}
@@ -54,11 +54,9 @@ public class Day20 {
 		if (!min) {
 			int maxLength = allRegex.stream().mapToInt(m -> m.length()).max().orElse(0);
 			returnString = allRegex.stream().filter(m -> m.length() == maxLength).findFirst().orElse("");
-
 		} else {
 			int minLength = allRegex.stream().mapToInt(m -> m.length()).min().orElse(0);
 			returnString = allRegex.stream().filter(m -> m.length() == minLength).findFirst().orElse("");
-
 		}
 		return returnString;
 	}
@@ -91,14 +89,23 @@ public class Day20 {
 		return allRegex;
 	}
 
+	private static String buffAppend(String m) {
+		buff = new StringBuilder();
+		buff.append(begin);
+		buff.append(m);
+		buff.append(end);
+		return buff.toString();
+	}
+
 	private static List<String> unregexify2List(String string) {
 		posBeginRegex = string.lastIndexOf("(");
 		posEndRegex = (string.substring(posBeginRegex)).indexOf(")");
 		begin = string.substring(0, posBeginRegex);
 		end = string.substring(posBeginRegex + posEndRegex + 1);
 		middle = string.substring(posBeginRegex, posBeginRegex + posEndRegex + 1);
-		return unregexifyList(middle).stream().map(m -> begin + m + end)
-				.filter(e -> e.replace("(", "").replace("|", "").replace(")", "").length() >= 1002)
+		return unregexifyList(middle).stream().map(m -> buffAppend(m))
+				// .filter(e -> e.replace("(", "").replace("|", "").replace(")", "").length() >=
+				// 1002)
 				.collect(Collectors.toList());
 	}
 
