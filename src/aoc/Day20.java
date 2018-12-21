@@ -21,11 +21,73 @@ public class Day20 {
 	public static void main(String[] args) throws IOException {
 		long timeStart = System.currentTimeMillis();
 		String input = Files.readAllLines(Paths.get("src/main/resources/day20-input.file")).get(0);
-		input = minify(input);
-		System.out.println(unregexifyAll(input, false));
-		System.out.println(unregexifyAll(input, false).length() - 2);
-		System.out.println(unregexifyAllList(input).size());
+
+		String inputPart1 = minify(input);
+		System.out.println(unregexifyAll(inputPart1, false).length() - 2);
+		parsePart2(input);
+
+		// System.out.println(unregexifyAllList(input).size());
 		System.out.println("runned time : " + (System.currentTimeMillis() - timeStart) + " ms");
+	}
+
+	private static void parsePart2(String input) {
+		Map<String, Integer> grid = new HashMap<>();
+		List<String> positions = new ArrayList<>();
+		int x = 0;
+		int y = 0;
+		grid.put(x + "!" + y, 0);
+		for (int i = 1; i < input.length() - 1; i++) {
+			int xPrec = x;
+			int yPrec = y;
+			switch (input.charAt(i)) {
+			case 'E':
+				y += 1;
+				if (grid.get(x + "!" + y) == null) {
+					grid.put(x + "!" + y, grid.get(xPrec + "!" + yPrec) + 1);
+				} else {
+					grid.put(x + "!" + y, Math.min(grid.get(x + "!" + y), grid.get(xPrec + "!" + yPrec) + 1));
+				}
+				break;
+			case 'W':
+				y -= 1;
+				if (grid.get(x + "!" + y) == null) {
+					grid.put(x + "!" + y, grid.get(xPrec + "!" + yPrec) + 1);
+				} else {
+					grid.put(x + "!" + y, Math.min(grid.get(x + "!" + y), grid.get(xPrec + "!" + yPrec) + 1));
+				}
+				break;
+			case 'S':
+				x += 1;
+				if (grid.get(x + "!" + y) == null) {
+					grid.put(x + "!" + y, grid.get(xPrec + "!" + yPrec) + 1);
+				} else {
+					grid.put(x + "!" + y, Math.min(grid.get(x + "!" + y), grid.get(xPrec + "!" + yPrec) + 1));
+				}
+				break;
+			case 'N':
+				x -= 1;
+				if (grid.get(x + "!" + y) == null) {
+					grid.put(x + "!" + y, grid.get(xPrec + "!" + yPrec) + 1);
+				} else {
+					grid.put(x + "!" + y, Math.min(grid.get(x + "!" + y), grid.get(xPrec + "!" + yPrec) + 1));
+				}
+				break;
+			case '(':
+				positions.add(x + "!" + y);
+				break;
+			case '|':
+				String st = positions.get(positions.size() - 1);
+				x = Integer.parseInt(st.split("!")[0]);
+				y = Integer.parseInt(st.split("!")[1]);
+				break;
+			case ')':
+				positions.remove(positions.size() - 1);
+				break;
+			default:
+				break;
+			}
+		}
+		System.out.println(grid.entrySet().stream().filter(e -> e.getValue() >= 1000).count());
 	}
 
 	private static String minify(String input) {
