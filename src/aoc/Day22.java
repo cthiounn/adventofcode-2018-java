@@ -51,8 +51,8 @@ public class Day22 {
 	private static void initGrid(Map<String, Integer> grid) {
 		int geologicIndex = 0;
 		int erosionLevel = 0;
-		for (int i = 0; i < 750; i++) {
-			for (int j = 0; j < 750; j++) {
+		for (int i = 0; i < depth; i++) {
+			for (int j = 0; j < depth; j++) {
 				if (i == j && j == 0) {
 					geologicIndex = 0;
 				} else if (i == xTarget && j == yTarget) {
