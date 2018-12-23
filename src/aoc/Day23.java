@@ -6,12 +6,13 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class Day23 {
 
@@ -26,6 +27,8 @@ public class Day23 {
 		long timeStart = System.currentTimeMillis();
 		List<String> input = Files.readAllLines(Paths.get("src/main/resources/day23-input.file"));
 		parse(input);
+
+		// part1
 		Nanobot e = Nanobot.listOfNanobots.stream().sorted(Comparator.comparing(Nanobot::getRadius).reversed())
 				.findFirst().orElse(null);
 		int nbNearNanobots = 0;
@@ -35,53 +38,95 @@ public class Day23 {
 			}
 		}
 		System.out.println(nbNearNanobots);
+
+		// part2
+
+		Set<Nanobot> pointsToCheckSet = new HashSet<>();
+		Set<Nanobot> pointsToCheckSet2 = new HashSet<>();
 		Map<Nanobot, Integer> gridNanobot = new HashMap<>();
-		for (Nanobot f : Nanobot.listOfNanobots) {
-			nbNearNanobots = 0;
-			for (Nanobot n : Nanobot.listOfNanobots) {
-				if (f.calculateManhattanDistance(n) <= f.getRadius()) {
-					nbNearNanobots++;
+
+		pointsToCheckSet.addAll(Nanobot.listOfNanobots);
+		int newMax = 0;
+		int maxNb = 1;
+		int i = 0;
+		while (!pointsToCheckSet.isEmpty() && (maxNb != newMax || i < 10)) {
+			if (maxNb == newMax) {
+				i++;
+			}
+			maxNb = newMax;
+			gridNanobot.clear();
+			pointsToCheckSet2.clear();
+			for (Nanobot n : pointsToCheckSet) {
+				n.checkDist();
+				gridNanobot.put(n, n.nbNearBot);
+				for (Nanobot m : pointsToCheckSet) {
+					Nanobot newPoint = newPoints(n, m);
+					if (!pointsToCheckSet2.contains(newPoint)) {
+						pointsToCheckSet2.add(newPoint);
+					}
 				}
 			}
-//			System.out.println("put=" + f + "," + nbNearNanobots);
-			gridNanobot.put(f, nbNearNanobots);
+			newMax = pointsToCheckSet2.stream().mapToInt(f -> f.checkDist()).max().orElse(0);
+			final int ref = newMax;
+			System.out.println(ref);
+			pointsToCheckSet.clear();
+			pointsToCheckSet.addAll(Nanobot.listOfNanobots);
+			pointsToCheckSet
+					.addAll(pointsToCheckSet2.stream().filter(f -> f.nbNearBot == ref).collect(Collectors.toList()));
 		}
-		int maxCoordinate = gridNanobot.entrySet().stream().mapToInt(f -> f.getKey().getMax()).max().orElse(0);
-		int minCoordinate = gridNanobot.entrySet().stream().mapToInt(f -> f.getKey().getMin()).min().orElse(0);
-//		System.out.println(maxCoordinate);
-//		System.out.println(minCoordinate);
-//		IntStream.rangeClosed(minCoordinate, maxCoordinate).forEach(g -> System.out.println(g));
-
-		// int maxNearBots = gridNanobot.entrySet().stream().mapToInt(f ->
-		// f.getValue()).max().orElse(0);
-//		Nanobot centerNanobot = gridNanobot.entrySet().stream().filter(f -> f.getValue() == maxNearBots).findFirst()
-//				.orElse(null).getKey();
-//		int x = centerNanobot.getX();
-//		int y = centerNanobot.getY();
-//		int z = centerNanobot.getZ();
-//		int radius = centerNanobot.getRadius();
-		List<Integer> list = new ArrayList<>();
-		Map<Integer, Integer> grid = new HashMap<>();
-		for (Nanobot n : Nanobot.listOfNanobots) {
-			int radiusBot = n.getRadius();
-			int oneDimCoord = n.oneDimensionFromOrigin();
-//			IntStream.rangeClosed(minCoordinate, maxCoordinate).forEach(g -> list.add(g));
-			for (int i = -radiusBot; i <= radiusBot; i++) {
-////				int curVal;
-////				int key = oneDimCoord + i;
-////				if (grid.containsKey(key)) {
-////					curVal = grid.get(key);
-////					grid.put(key, curVal + 1);
-////				} else {
-////					grid.put(key, 1);
-////				}
-//
-				grid.put(oneDimCoord + i, grid.get(oneDimCoord + i) == null ? 1 : (grid.get(oneDimCoord + i) + 1));
-			}
-			System.out.println(grid.size());
+		System.out.println("final=" + newMax);
+//		int tempMax = gridNanobot.entrySet().stream().mapToInt(g -> g.getValue()).max().orElse(0);
+//		System.out.println("final=" + tempMax);
+//		List<Nanobot> candidatesPoints = gridNanobot.entrySet().stream().filter(g -> g.getValue() == tempMax)
+//				.map(g -> g.getKey()).collect(Collectors.toList());
+		final int ref = newMax;
+		for (Nanobot nanobot : pointsToCheckSet2.stream().filter(f -> f.nbNearBot == ref)
+				.collect(Collectors.toList())) {
+			crawl(nanobot, nanobot.oneDimensionFromOrigin(), newMax);
 		}
-		System.out.println(grid.entrySet().stream().mapToInt(n -> n.getValue()).max().orElse(0));
 		System.out.println("runned time : " + (System.currentTimeMillis() - timeStart) + " ms");
+	}
+
+	private static void crawl(Nanobot nanobot, int oneDimensionFromOrigin, int tempMax) {
+		int x = 0;
+		int y = 0;
+		int z = 0;
+		int newx = nanobot.getX();
+		int newy = nanobot.getY();
+		int newz = nanobot.getZ();
+		int lowerPoint = oneDimensionFromOrigin;
+		while (x != newx && y != newy && z != newz) {
+			x = newx;
+			y = newy;
+			z = newz;
+			for (int i = -100; i < 100; i++) {
+				for (int j = -100; j < 100; j++) {
+					for (int j2 = -100; j2 < 100; j2++) {
+						if (Math.abs(x + i) + Math.abs(y + j) + Math.abs(z + j2) < lowerPoint) {
+							int nbNearNanobots = 0;
+							for (Nanobot n : Nanobot.listOfNanobots) {
+								if (n.calculateManhattanDistance(x + i, y + j, z + j2) <= n.getRadius()) {
+									nbNearNanobots++;
+								}
+							}
+							if (nbNearNanobots >= tempMax) {
+								newz = z + j2;
+								newy = y + j;
+								newx = x + i;
+								tempMax = nbNearNanobots;
+								lowerPoint = Math.abs(x + i) + Math.abs(y + j) + Math.abs(z + j2);
+							}
+						}
+					}
+				}
+			}
+		}
+		System.out.println("x=" + x + "," + y + "," + z + ";" + tempMax + ";" + lowerPoint);
+	}
+
+	private static Nanobot newPoints(Nanobot n, Nanobot f) {
+		return new Nanobot(777, (n.getX() + f.getX()) / 2, (n.getY() + f.getY()) / 2, (n.getZ() + f.getZ()) / 2, 0,
+				false);
 	}
 
 	private static void parse(List<String> input) {
@@ -94,7 +139,7 @@ public class Day23 {
 				int y = Integer.parseInt(matcher.group(2));
 				int z = Integer.parseInt(matcher.group(3));
 				int radius = Integer.parseInt(matcher.group(4));
-				new Nanobot(id, x, y, z, radius);
+				new Nanobot(id, x, y, z, radius, true);
 			}
 			id++;
 		}
@@ -103,6 +148,7 @@ public class Day23 {
 }
 
 class Nanobot {
+
 	static List<Nanobot> listOfNanobots = new ArrayList<>();
 	int id;
 	int x;
@@ -111,8 +157,9 @@ class Nanobot {
 	int radius;
 	int min;
 	int max;
+	int nbNearBot;
 
-	public Nanobot(int id, int x, int y, int z, int radius) {
+	public Nanobot(int id, int x, int y, int z, int radius, boolean nanobot) {
 		super();
 		this.id = id;
 		this.x = x;
@@ -121,7 +168,20 @@ class Nanobot {
 		this.radius = radius;
 		this.min = oneDimensionFromOrigin() - radius;
 		this.max = oneDimensionFromOrigin() + radius;
-		listOfNanobots.add(this);
+		if (nanobot) {
+			listOfNanobots.add(this);
+		}
+	}
+
+	public int checkDist() {
+		int nbNearNanobots = 0;
+		for (Nanobot n : Nanobot.listOfNanobots) {
+			if (this.calculateManhattanDistance(n) <= n.getRadius()) {
+				nbNearNanobots++;
+			}
+		}
+		this.nbNearBot = nbNearNanobots;
+		return this.nbNearBot;
 	}
 
 	public int oneDimensionFromOrigin() {
@@ -203,6 +263,10 @@ class Nanobot {
 
 	public void setMax(int max) {
 		this.max = max;
+	}
+
+	public boolean equals(Nanobot b) {
+		return x == b.getX() && y == b.getY() && z == b.getZ();
 	}
 
 }
