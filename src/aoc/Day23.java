@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Day23 {
 
@@ -45,37 +46,41 @@ public class Day23 {
 //			System.out.println("put=" + f + "," + nbNearNanobots);
 			gridNanobot.put(f, nbNearNanobots);
 		}
-		int maxNearBots = gridNanobot.entrySet().stream().mapToInt(f -> f.getValue()).max().orElse(0);
-		Nanobot centerNanobot = gridNanobot.entrySet().stream().filter(f -> f.getValue() == maxNearBots).findFirst()
-				.orElse(null).getKey();
-		int x = centerNanobot.getX();
-		int y = centerNanobot.getY();
-		int z = centerNanobot.getZ();
-		int radius = centerNanobot.getRadius();
-//		System.out.println(gridNanobot);
-//		minX = Nanobot.listOfNanobots.stream().mapToInt(g -> g.getX()).min().orElse(0);
-//		maxX = Nanobot.listOfNanobots.stream().mapToInt(g -> g.getX()).max().orElse(0);
-//		minY = Nanobot.listOfNanobots.stream().mapToInt(g -> g.getY()).min().orElse(0);
-//		maxY = Nanobot.listOfNanobots.stream().mapToInt(g -> g.getY()).max().orElse(0);
-//		minZ = Nanobot.listOfNanobots.stream().mapToInt(g -> g.getZ()).min().orElse(0);
-//		maxZ = Nanobot.listOfNanobots.stream().mapToInt(g -> g.getZ()).max().orElse(0);
-		Map<String, Integer> grid = new HashMap<>();
-		for (int i = -radius; i <= radius; i++) {
-			for (int j = -radius; j <= radius; j++) {
-				for (int k = -radius; k <= radius; k++) {
-					int nb = 0;
-					for (Nanobot n : Nanobot.listOfNanobots) {
-						if (n.calculateManhattanDistance(i, j, k) <= n.getRadius()) {
-							nb++;
-						}
-					}
-					if (nb > maxNearBots) {
-						grid.put(i + "!" + j + "!" + k, nb);
-					}
-				}
+		int maxCoordinate = gridNanobot.entrySet().stream().mapToInt(f -> f.getKey().getMax()).max().orElse(0);
+		int minCoordinate = gridNanobot.entrySet().stream().mapToInt(f -> f.getKey().getMin()).min().orElse(0);
+//		System.out.println(maxCoordinate);
+//		System.out.println(minCoordinate);
+//		IntStream.rangeClosed(minCoordinate, maxCoordinate).forEach(g -> System.out.println(g));
+
+		// int maxNearBots = gridNanobot.entrySet().stream().mapToInt(f ->
+		// f.getValue()).max().orElse(0);
+//		Nanobot centerNanobot = gridNanobot.entrySet().stream().filter(f -> f.getValue() == maxNearBots).findFirst()
+//				.orElse(null).getKey();
+//		int x = centerNanobot.getX();
+//		int y = centerNanobot.getY();
+//		int z = centerNanobot.getZ();
+//		int radius = centerNanobot.getRadius();
+		List<Integer> list = new ArrayList<>();
+		Map<Integer, Integer> grid = new HashMap<>();
+		for (Nanobot n : Nanobot.listOfNanobots) {
+			int radiusBot = n.getRadius();
+			int oneDimCoord = n.oneDimensionFromOrigin();
+//			IntStream.rangeClosed(minCoordinate, maxCoordinate).forEach(g -> list.add(g));
+			for (int i = -radiusBot; i <= radiusBot; i++) {
+////				int curVal;
+////				int key = oneDimCoord + i;
+////				if (grid.containsKey(key)) {
+////					curVal = grid.get(key);
+////					grid.put(key, curVal + 1);
+////				} else {
+////					grid.put(key, 1);
+////				}
+//
+				grid.put(oneDimCoord + i, grid.get(oneDimCoord + i) == null ? 1 : (grid.get(oneDimCoord + i) + 1));
 			}
+			System.out.println(grid.size());
 		}
-		System.out.println(grid.size());
+		System.out.println(grid.entrySet().stream().mapToInt(n -> n.getValue()).max().orElse(0));
 		System.out.println("runned time : " + (System.currentTimeMillis() - timeStart) + " ms");
 	}
 
@@ -104,6 +109,8 @@ class Nanobot {
 	int y;
 	int z;
 	int radius;
+	int min;
+	int max;
 
 	public Nanobot(int id, int x, int y, int z, int radius) {
 		super();
@@ -112,7 +119,13 @@ class Nanobot {
 		this.y = y;
 		this.z = z;
 		this.radius = radius;
+		this.min = oneDimensionFromOrigin() - radius;
+		this.max = oneDimensionFromOrigin() + radius;
 		listOfNanobots.add(this);
+	}
+
+	public int oneDimensionFromOrigin() {
+		return calculateManhattanDistance(0, 0, 0);
 	}
 
 	public int calculateManhattanDistance(int i, int j, int k) {
@@ -174,6 +187,22 @@ class Nanobot {
 	@Override
 	public String toString() {
 		return "Nanobot [id=" + id + ", x=" + x + ", y=" + y + ", z=" + z + ", radius=" + radius + "]";
+	}
+
+	public int getMin() {
+		return min;
+	}
+
+	public void setMin(int min) {
+		this.min = min;
+	}
+
+	public int getMax() {
+		return max;
+	}
+
+	public void setMax(int max) {
+		this.max = max;
 	}
 
 }
