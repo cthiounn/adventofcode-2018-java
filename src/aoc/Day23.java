@@ -7,12 +7,16 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import com.sun.corba.se.spi.orbutil.fsm.Guard.Result;
 
 public class Day23 {
 
@@ -39,94 +43,24 @@ public class Day23 {
 		}
 		System.out.println(nbNearNanobots);
 
-		// part2
-
-		Set<Nanobot> pointsToCheckSet = new HashSet<>();
-		Set<Nanobot> pointsToCheckSet2 = new HashSet<>();
-		Map<Nanobot, Integer> gridNanobot = new HashMap<>();
-
-		pointsToCheckSet.addAll(Nanobot.listOfNanobots);
-		int newMax = 0;
-		int maxNb = 1;
-		int i = 0;
-		while (!pointsToCheckSet.isEmpty() && (maxNb != newMax || i < 10)) {
-			if (maxNb == newMax) {
-				i++;
-			}
-			maxNb = newMax;
-			gridNanobot.clear();
-			pointsToCheckSet2.clear();
-			for (Nanobot n : pointsToCheckSet) {
-				n.checkDist();
-				gridNanobot.put(n, n.nbNearBot);
-				for (Nanobot m : pointsToCheckSet) {
-					Nanobot newPoint = newPoints(n, m);
-					if (!pointsToCheckSet2.contains(newPoint)) {
-						pointsToCheckSet2.add(newPoint);
-					}
-				}
-			}
-			newMax = pointsToCheckSet2.stream().mapToInt(f -> f.checkDist()).max().orElse(0);
-			final int ref = newMax;
-			System.out.println(ref);
-			pointsToCheckSet.clear();
-			pointsToCheckSet.addAll(Nanobot.listOfNanobots);
-			pointsToCheckSet
-					.addAll(pointsToCheckSet2.stream().filter(f -> f.nbNearBot == ref).collect(Collectors.toList()));
+		Map<Integer, Integer> frontiers = new TreeMap<>();
+		for (Nanobot n : Nanobot.listOfNanobots) {
+			int distFromOrigin = n.oneDimensionFromOrigin();
+			frontiers.put(distFromOrigin - n.radius, 1); // interval start
+			frontiers.put(distFromOrigin + n.radius, -1); // remove interval
 		}
-		System.out.println("final=" + newMax);
-//		int tempMax = gridNanobot.entrySet().stream().mapToInt(g -> g.getValue()).max().orElse(0);
-//		System.out.println("final=" + tempMax);
-//		List<Nanobot> candidatesPoints = gridNanobot.entrySet().stream().filter(g -> g.getValue() == tempMax)
-//				.map(g -> g.getKey()).collect(Collectors.toList());
-		final int ref = newMax;
-		for (Nanobot nanobot : pointsToCheckSet2.stream().filter(f -> f.nbNearBot == ref)
-				.collect(Collectors.toList())) {
-			crawl(nanobot, nanobot.oneDimensionFromOrigin(), newMax);
+		int count = 0;
+		int maxCount = 0;
+		int minDistanceForMaxPoint = 0;
+		for (Map.Entry<Integer, Integer> f : frontiers.entrySet()) {
+			count += f.getValue();
+			if (count > maxCount) {
+				minDistanceForMaxPoint = f.getKey();
+				maxCount = count;
+			}
 		}
+		System.out.println(minDistanceForMaxPoint);
 		System.out.println("runned time : " + (System.currentTimeMillis() - timeStart) + " ms");
-	}
-
-	private static void crawl(Nanobot nanobot, int oneDimensionFromOrigin, int tempMax) {
-		int x = 0;
-		int y = 0;
-		int z = 0;
-		int newx = nanobot.getX();
-		int newy = nanobot.getY();
-		int newz = nanobot.getZ();
-		int lowerPoint = oneDimensionFromOrigin;
-		while (x != newx && y != newy && z != newz) {
-			x = newx;
-			y = newy;
-			z = newz;
-			for (int i = -100; i < 100; i++) {
-				for (int j = -100; j < 100; j++) {
-					for (int j2 = -100; j2 < 100; j2++) {
-						if (Math.abs(x + i) + Math.abs(y + j) + Math.abs(z + j2) < lowerPoint) {
-							int nbNearNanobots = 0;
-							for (Nanobot n : Nanobot.listOfNanobots) {
-								if (n.calculateManhattanDistance(x + i, y + j, z + j2) <= n.getRadius()) {
-									nbNearNanobots++;
-								}
-							}
-							if (nbNearNanobots >= tempMax) {
-								newz = z + j2;
-								newy = y + j;
-								newx = x + i;
-								tempMax = nbNearNanobots;
-								lowerPoint = Math.abs(x + i) + Math.abs(y + j) + Math.abs(z + j2);
-							}
-						}
-					}
-				}
-			}
-		}
-		System.out.println("x=" + x + "," + y + "," + z + ";" + tempMax + ";" + lowerPoint);
-	}
-
-	private static Nanobot newPoints(Nanobot n, Nanobot f) {
-		return new Nanobot(777, (n.getX() + f.getX()) / 2, (n.getY() + f.getY()) / 2, (n.getZ() + f.getZ()) / 2, 0,
-				false);
 	}
 
 	private static void parse(List<String> input) {
