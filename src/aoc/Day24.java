@@ -17,26 +17,37 @@ public class Day24 {
 		List<String> input = Files.readAllLines(Paths.get("src/main/resources/day24-input.file"));
 		input.remove(0);
 		parse(input);
+		part1(0, false);
 
-		for (Group g : Group.listOfGroup) {
-			System.out.println(g.id + ";" + g.damageType + ";" + g.nbUnits + ";" + g.attackDamage + ";" + g.fire + ","
-					+ g.cold + "," + g.radiation + "," + g.slashing + "," + g.bludgeoning + ";"
-					+ (g.attackDamage * g.nbUnits));
+		int boost = 1;
+		boolean continueLoop = false;
+		while (!continueLoop) {
+			Group.listOfGroup.clear();
+			parse(input);
+			continueLoop = part1(boost, true);
+			boost++;
 		}
+		System.out.println(Group.listOfGroup.stream().filter(e -> !e.isDead).mapToInt(e -> e.nbUnits).sum());
+		System.out.println("runned time : " + (System.currentTimeMillis() - timeStart) + " ms");
+	}
+
+	private static boolean part1(int boost, boolean partTwo) {
+		Group.listOfGroup.stream().filter(e -> e.isImmuneType).forEach(e -> e.attackDamage += boost);
 		int i = 0;
 		while (!isAllImmune(Group.listOfGroup)) {
 			i++;
-			System.out.println("Turn " + i);
-			System.out.println("Immune System:");
-			for (Group g : Group.listOfGroup.stream().filter(e -> !e.isDead).filter(e -> e.isImmuneType)
-					.collect(Collectors.toList())) {
-				System.out.println("Group " + g.id + " contains " + g.nbUnits + " units");
-			}
-			System.out.println("Infection:");
-			for (Group g : Group.listOfGroup.stream().filter(e -> !e.isDead).filter(e -> !e.isImmuneType)
-					.collect(Collectors.toList())) {
-				System.out.println("Group " + g.id + " contains " + g.nbUnits + " units");
-			}
+			Group.nbDiedInRound = 0;
+//			System.out.println("Turn " + i);
+//			System.out.println("Immune System:");
+//			for (Group g : Group.listOfGroup.stream().filter(e -> !e.isDead).filter(e -> e.isImmuneType)
+//					.collect(Collectors.toList())) {
+//				System.out.println("Group " + g.id + " contains " + g.nbUnits + " units");
+//			}
+//			System.out.println("Infection:");
+//			for (Group g : Group.listOfGroup.stream().filter(e -> !e.isDead).filter(e -> !e.isImmuneType)
+//					.collect(Collectors.toList())) {
+//				System.out.println("Group " + g.id + " contains " + g.nbUnits + " units");
+//			}
 			List<Group> groupToAttack = new ArrayList<Group>();
 			groupToAttack.addAll(Group.listOfGroup.stream().filter(e -> !e.isDead).collect(Collectors.toList()));
 			for (Group g : Group.listOfGroup.stream().filter(e -> !e.isDead).sorted(new Comparator<Group>() {
@@ -64,16 +75,22 @@ public class Day24 {
 			}
 
 			// attack
-			System.out.println(" ");
+//			System.out.println(" ");
 			for (Group g : Group.listOfGroup.stream().filter(e -> !e.isDead)
 					.sorted(Comparator.comparing(Group::getInitiative).reversed()).collect(Collectors.toList())) {
 
 				g.attack();
 			}
+			if (Group.nbDiedInRound == 0) { // endless loop
+				break;
+			}
 		}
 
-		System.out.println(Group.listOfGroup.stream().filter(e -> !e.isDead).mapToInt(e -> e.nbUnits).sum());
-		System.out.println("runned time : " + (System.currentTimeMillis() - timeStart) + " ms");
+		if (!partTwo) {
+			System.out.println(Group.listOfGroup.stream().filter(e -> !e.isDead).mapToInt(e -> e.nbUnits).sum());
+		}
+		return (Group.listOfGroup.stream().filter(e -> !e.isDead).filter(e -> !e.isImmuneType).findAny()
+				.orElse(null) == null);
 	}
 
 	private static boolean isAllImmune(List<Group> listOfGroup) {
@@ -122,8 +139,8 @@ public class Day24 {
 						}).findFirst().orElse(null);
 				if (ennemy != null) {
 					g.idNextAttack = ennemy.id;
-					System.out.println((g.isImmuneType ? "Immune System group " : "Infection group ") + g.id
-							+ " would deal to group " + ennemy.id + " " + maxDamage + " damage");
+//					System.out.println((g.isImmuneType ? "Immune System group " : "Infection group ") + g.id
+//							+ " would deal to group " + ennemy.id + " " + maxDamage + " damage");
 					groupToAttack.remove(ennemy);
 				}
 			}
@@ -191,6 +208,7 @@ public class Day24 {
 
 class Group {
 	static List<Group> listOfGroup = new ArrayList<Group>();
+	static int nbDiedInRound = 0;
 	int id;
 	int idNextAttack;
 	int initiative;
@@ -229,8 +247,9 @@ class Group {
 			if (g != null) {
 				long died = Math.round((g.inflictedDamage(attackDamage, damageType, nbUnits) / g.hp));
 				g.nbUnits -= died;
-				System.out.println((isImmuneType ? "Immune System group " : "Infection group ") + id
-						+ " attack defending group " + g.id + ", killing " + died + " units");
+				nbDiedInRound += died;
+//				System.out.println((isImmuneType ? "Immune System group " : "Infection group ") + id
+//						+ " attack defending group " + g.id + ", killing " + died + " units");
 				if (g.nbUnits <= 0) {
 					g.isDead = true;
 				}
