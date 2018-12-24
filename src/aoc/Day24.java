@@ -19,8 +19,9 @@ public class Day24 {
 		parse(input);
 
 		for (Group g : Group.listOfGroup) {
-			System.out.println(g.id + ";" + g.damageType + ";" + g.nbUnits + ";" + g.fire + "," + g.cold + ","
-					+ g.radiation + "," + g.slashing + "," + g.bludgeoning + ";" + (g.attackDamage * g.nbUnits));
+			System.out.println(g.id + ";" + g.damageType + ";" + g.nbUnits + ";" + g.attackDamage + ";" + g.fire + ","
+					+ g.cold + "," + g.radiation + "," + g.slashing + "," + g.bludgeoning + ";"
+					+ (g.attackDamage * g.nbUnits));
 		}
 		int i = 0;
 		while (!isAllImmune(Group.listOfGroup)) {
@@ -143,8 +144,8 @@ public class Day24 {
 			if (line.contains("Infection")) {
 				isImmuneType = false;
 			} else {
-				String parsePattern = "(\\d+) units each with (\\d+) hit points \\((.*"
-						+ ")\\) with an attack that does (\\d+) (.*) damage at initiative (\\d+)";
+				String parsePattern = "(\\d+) units each with (\\d+) hit points ?\\(?(.*"
+						+ ")\\)? with an attack that does (\\d+) (.*) damage at initiative (\\d+)";
 				Pattern pattern = Pattern.compile(parsePattern);
 				Matcher matcher = pattern.matcher(line);
 				while (matcher.find()) {
