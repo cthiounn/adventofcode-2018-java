@@ -119,7 +119,7 @@ class Coordinate {
 
 	@Override
 	public String toString() {
-		return "Co [x=" + x + ", y=" + y + ", libelle=" + libelle + "]";
+		return "Coordinate [x=" + x + ", y=" + y + ", libelle=" + libelle + "]";
 	}
 
 	public String getLibelle() {

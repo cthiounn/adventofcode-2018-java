@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+//TODO bad perf
 public class Day22 {
 
 	static int xTarget = 0;

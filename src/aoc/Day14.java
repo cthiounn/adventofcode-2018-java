@@ -2,6 +2,7 @@ package aoc;
 
 public class Day14 {
 
+	// TODO bad perf
 	public static void main(String[] args) {
 		long timeStart = System.currentTimeMillis();
 		int input = 540391;

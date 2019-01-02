@@ -52,7 +52,7 @@ public class Day12 {
 			}
 		}
 
-		long sumGrowth = listOfDiffNumber.stream().mapToInt(i -> i.intValue()).sum();
+		long sumGrowth = listOfDiffNumber.stream().mapToInt(Integer::intValue).sum();
 		double meand = new Double(sumGrowth);
 		meand = meand / listOfDiffNumber.size();
 		BigDecimal meanGrowth = new BigDecimal(meand);

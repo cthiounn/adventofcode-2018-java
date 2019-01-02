@@ -23,7 +23,7 @@ public class Day18 {
 		int numberOfLumberyard = 0;
 		int numberOfTrees = 0;
 		while (minute < 1000) {
-//			System.out.println(minute);
+			// System.out.println(minute);
 			// printDataViz(grid, 50, 50);
 			grid = growGrid(grid);
 			minute++;
@@ -38,7 +38,8 @@ public class Day18 {
 			if (allTotal.get(numberOfLumberyard * numberOfTrees) == null) {
 				allTotal.put(numberOfLumberyard * numberOfTrees, 1);
 			} else {
-				System.out.println("already seen = " + minute + "," + (numberOfLumberyard * numberOfTrees));
+				// System.out.println("already seen = " + minute + "," + (numberOfLumberyard *
+				// numberOfTrees));
 			}
 		}
 

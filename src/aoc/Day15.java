@@ -20,24 +20,24 @@ public class Day15 {
 	public static void main(String[] args) throws IOException {
 		long timeStart = System.currentTimeMillis();
 
-//		runDay15("day15-test1.file", false);// 590,47,27730
-//		runDay15("day15-test2.file", false);// 982 ,37 ,36334
-//		runDay15("day15-test3.file", false);// 859,46,39514
-//		runDay15("day15-test4.file", false);// 793,35,27755
-//		runDay15("day15-test5.file", false);// 536,54,28944
-//		runDay15("day15-test6.file", false);// 937,20,18740
-//		runDay15("day15-inputO1.file", false);//
-//		runDay15("day15-inputO2.file", false); // 201638
-//		runDay15("day15-inputO3.file", false);// 195774
-//		runDay15("day15-inputO4.file", false);// 214731
-//		runDay15("day15-inputO5.file", false);// 261855 95 ??
-//		runDay15("day15-inputO6.file", true);// 2812, 68
+		// runDay15("day15-test1.file", false);// 590,47,27730
+		// runDay15("day15-test2.file", false);// 982 ,37 ,36334
+		// runDay15("day15-test3.file", false);// 859,46,39514
+		// runDay15("day15-test4.file", false);// 793,35,27755
+		// runDay15("day15-test5.file", false);// 536,54,28944
+		// runDay15("day15-test6.file", false);// 937,20,18740
+		// runDay15("day15-inputO1.file", false);//
+		// runDay15("day15-inputO2.file", false); // 201638
+		// runDay15("day15-inputO3.file", false);// 195774
+		// runDay15("day15-inputO4.file", false);// 214731
+		// runDay15("day15-inputO5.file", false);// 261855 95 ??
+		// runDay15("day15-inputO6.file", true);// 2812, 68
 		runDay15("day15-input.file", true);//
 		System.out.println("runned time : " + (System.currentTimeMillis() - timeStart) + " ms");
 	}
 
 	private static void runDay15(String inputFile, boolean withPartTwo) throws IOException {
-//		System.out.println("----- BEGIN " + inputFile + "-----");
+		// System.out.println("----- BEGIN " + inputFile + "-----");
 		int attackPowerElf = 0;
 		boolean finishPartTwo = false;
 		int round = 0;
@@ -61,22 +61,23 @@ public class Day15 {
 			round = 0;
 			boolean finishBreaked = false;
 			while (!finishBreaked) {
-//				System.out.println("Begin of turn " + round);
-				printDataViz(grid);
+				// System.out.println("Begin of turn " + round);
+				// printDataViz(grid);
 				listOfPlayers = listOfPlayers.stream().sorted().collect(Collectors.toList());
 				for (Player player : listOfPlayers) {
 					if (isFinished(Player.listOfPlayer)) {
 						finishBreaked = true;
 						break;
 					}
-//				System.out.println("Turn=" + player);
+					// System.out.println("Turn=" + player);
 					player.move(grid);
 					player.attack(grid);
 
 				}
 				if (withPartTwo && Player.numberElfDied > 0) {
 					// gameover
-//					System.out.println("The elves have died with an attackPower=" + attackPowerElf + " ");
+					// System.out.println("The elves have died with an attackPower=" +
+					// attackPowerElf + " ");
 					break;
 				}
 				// System.out.println("End of turn " + round);
@@ -303,9 +304,9 @@ class Player implements Comparable<Player> {
 				List<Entry<String, Integer>> list = new ArrayList<>(playerAndDist.entrySet());
 				list.sort(Entry.comparingByValue());
 				Map<String, Integer> result = new LinkedHashMap<>();
-//				System.out.println("-------------------------------------");
+				// System.out.println("-------------------------------------");
 				for (Entry<String, Integer> entry : list) {
-//					System.out.println("e=" + entry.getKey() + "/" + entry.getValue());
+					// System.out.println("e=" + entry.getKey() + "/" + entry.getValue());
 					result.put(entry.getKey(), entry.getValue());
 				}
 				for (Map.Entry<String, Integer> entry : result.entrySet()) {
@@ -328,7 +329,7 @@ class Player implements Comparable<Player> {
 						}
 					}
 				}
-//				System.out.println("co=" + coordinateToReturn);
+				// System.out.println("co=" + coordinateToReturn);
 			}
 		}
 
@@ -450,9 +451,9 @@ class Player implements Comparable<Player> {
 		queue.put(posEnd, 0);
 		int queueSize = queue.size();
 		int oldQueue = 0;
-//		int counterLoop = 0;
+		// int counterLoop = 0;
 		while (reachable.isEmpty() && queueSize != oldQueue) {
-//			counterLoop++;
+			// counterLoop++;
 			oldQueue = queueSize;
 			List<String> elementToAdd = new ArrayList<>();
 			for (Map.Entry<String, Integer> entry : queue.entrySet()) {

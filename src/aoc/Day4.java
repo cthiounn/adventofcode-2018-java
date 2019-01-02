@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Day4 {
-	private final static String SEPARATOR = "!";
+	private static final String SEPARATOR = "!";
 
 	public static void main(String[] args) throws IOException, ParseException {
 		long timeStart = System.currentTimeMillis();

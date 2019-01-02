@@ -29,12 +29,11 @@ public class Day7 {
 			String nextJobAlpha = "";
 			ArrayList<String> listOfJobsToDoFirst = new ArrayList<>();
 			for (Map.Entry<String, Node> entry : grid.entrySet()) {
-				ArrayList<String> listToDoBeforeForJob = entry.getValue().getPrec();
+				List<String> listToDoBeforeForJob = entry.getValue().getPrec();
 				listToDoBeforeForJob.removeAll(listJobsDone);
-				if (listToDoBeforeForJob.isEmpty()) {
-					if (!listOfJobsToDoFirst.contains(entry.getKey()) && !listJobsDone.contains(entry.getKey())) {
-						listOfJobsToDoFirst.add(entry.getKey());
-					}
+				if (listToDoBeforeForJob.isEmpty() && !listOfJobsToDoFirst.contains(entry.getKey())
+						&& !listJobsDone.contains(entry.getKey())) {
+					listOfJobsToDoFirst.add(entry.getKey());
 				}
 			}
 			Collections.sort(listOfJobsToDoFirst);
@@ -66,12 +65,11 @@ public class Day7 {
 			// get new jobs to do
 			ArrayList<String> listOfJobsToDoFirst = new ArrayList<>();
 			for (Map.Entry<String, Node> entry : grid.entrySet()) {
-				ArrayList<String> listToDoBeforeForJob = entry.getValue().getPrec();
+				List<String> listToDoBeforeForJob = entry.getValue().getPrec();
 				listToDoBeforeForJob.removeAll(listJobsDone);
-				if (listToDoBeforeForJob.isEmpty()) {
-					if (!listOfJobsToDoFirst.contains(entry.getKey()) && !listJobsDone.contains(entry.getKey())) {
-						listOfJobsToDoFirst.add(entry.getKey());
-					}
+				if (listToDoBeforeForJob.isEmpty() && !listOfJobsToDoFirst.contains(entry.getKey())
+						&& !listJobsDone.contains(entry.getKey())) {
+					listOfJobsToDoFirst.add(entry.getKey());
 				}
 			}
 			for (Worker w : poolOfWorker) { // if a worker is already doing X job
@@ -198,7 +196,7 @@ class Worker {
 class Node {
 	private String label;
 	private int cost;
-	private ArrayList<String> prec = new ArrayList<>();
+	private List<String> prec = new ArrayList<>();
 	private boolean done = false;
 
 	public void setLabel(String st) {
@@ -209,11 +207,11 @@ class Node {
 		return label;
 	}
 
-	public ArrayList<String> getPrec() {
+	public List<String> getPrec() {
 		return prec;
 	}
 
-	public void setPrec(ArrayList<String> prec) {
+	public void setPrec(List<String> prec) {
 		this.prec = prec;
 	}
 
@@ -225,9 +223,9 @@ class Node {
 		this.done = done;
 	}
 
-	public Node(String libelle) {
+	public Node(String label) {
 		super();
-		this.label = libelle;
+		this.label = label;
 		this.cost = stringToInt(this.label);
 	}
 
@@ -242,6 +240,6 @@ class Node {
 
 	@Override
 	public String toString() {
-		return "Node [libelle=" + label + ", cost=" + cost + ", prec=" + prec + ", done=" + done + "]";
+		return "Node [label=" + label + ", cost=" + cost + ", prec=" + prec + ", done=" + done + "]";
 	}
 }

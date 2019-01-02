@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 public class Day9 {
 
@@ -15,8 +16,8 @@ public class Day9 {
 		long timeStart = System.currentTimeMillis();
 		String input = "";
 		Path p = Paths.get("src/main/resources", "day9-input.file");
-		try {
-			input = Files.lines(p).findFirst().orElse(null);
+		try (Stream<String> st = Files.lines(p)) {
+			input = st.findFirst().orElse(null);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

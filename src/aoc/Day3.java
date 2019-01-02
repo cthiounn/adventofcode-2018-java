@@ -6,6 +6,8 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Day3 {
 
@@ -33,59 +35,58 @@ public class Day3 {
 		}
 
 		for (String line : lines) {
-			if (fillGrid2(line, grid2)) {
-				System.out.println(line.split(" ")[0].replace("#", ""));
-			}
+			checkGrid(line, grid2);
 		}
 	}
 
 	public static int fillGrid(String str, Map<String, Integer> map) {
+		// #10 @ 257,504: 10x15
+		Pattern pattern = Pattern.compile("#(\\d+) @ (\\d+),(\\d+): (\\d+)x(\\d+)");
+		Matcher matcher = pattern.matcher(str);
 		int numberConflict = 0;
-		String[] liste = (str.split("@")[1]).split(":");
-		String[] pos = liste[0].split(",");
-		String[] size = liste[1].split("x");
-		String posX = pos[0].trim();
-		String posy = pos[1].trim();
-		String tailleX = size[0].trim();
-		String tailley = size[1].trim();
-		for (int i = 0; i < Integer.parseInt(tailleX); i++) {
-			for (int j = 0; j < Integer.parseInt(tailley); j++) {
-				int calculX = Integer.parseInt(posX) + i;
-				int calculY = Integer.parseInt(posy) + j;
-				int count = map.get(calculX + "*" + calculY) == null ? 0 : map.get(calculX + "*" + calculY);
-				if (count == 1) {
-					numberConflict++;
+		while (matcher.find()) {
+			int x = Integer.parseInt(matcher.group(2));
+			int y = Integer.parseInt(matcher.group(3));
+			int sizeX = Integer.parseInt(matcher.group(4));
+			int sizeY = Integer.parseInt(matcher.group(5));
+			for (int i = 0; i < sizeX; i++) {
+				for (int j = 0; j < sizeY; j++) {
+					int calculX = x + i;
+					int calculY = y + j;
+					int count = map.get(calculX + "*" + calculY) == null ? 0 : map.get(calculX + "*" + calculY);
+					if (count == 1) {
+						numberConflict++;
+					}
+					map.put(calculX + "*" + calculY, count + 1);
 				}
-				map.put(calculX + "*" + calculY, count + 1);
 			}
 		}
 		return numberConflict;
 	}
 
-	public static boolean fillGrid2(String str, Map<String, Integer> map) {
+	public static boolean checkGrid(String str, Map<String, Integer> map) {
+		Pattern pattern = Pattern.compile("#(\\d+) @ (\\d+),(\\d+): (\\d+)x(\\d+)");
+		Matcher matcher = pattern.matcher(str);
+		int id = 0;
+		while (matcher.find()) {
+			id = Integer.parseInt(matcher.group(1));
+			int x = Integer.parseInt(matcher.group(2));
+			int y = Integer.parseInt(matcher.group(3));
+			int sizeX = Integer.parseInt(matcher.group(4));
+			int sizeY = Integer.parseInt(matcher.group(5));
+			for (int i = 0; i < sizeX; i++) {
+				for (int j = 0; j < sizeY; j++) {
+					int calculX = x + i;
+					int calculY = y + j;
+					int count = map.get(calculX + "*" + calculY) == null ? 0 : map.get(calculX + "*" + calculY);
+					if (count != 1) {
 
-		boolean retour = true;
-		String[] liste = (str.split("@")[1]).split(":");
-
-		String[] pos = liste[0].split(",");
-		String[] size = liste[1].split("x");
-		String posX = pos[0].trim();
-		String posy = pos[1].trim();
-		String tailleX = size[0].trim();
-		String tailley = size[1].trim();
-		for (int i = 0; i < Integer.parseInt(tailleX); i++) {
-			for (int j = 0; j < Integer.parseInt(tailley); j++) {
-				int calculX = Integer.parseInt(posX) + i;
-				int calculY = Integer.parseInt(posy) + j;
-
-				int count = map.get(calculX + "*" + calculY) == null ? 0 : map.get(calculX + "*" + calculY);
-				if (count != 1) {
-					return false;
+						return false;
+					}
 				}
 			}
-
 		}
-		return retour;
+		System.out.println(id);
+		return true;
 	}
-
 }

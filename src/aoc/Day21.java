@@ -4,14 +4,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
+//TODO bad perf part2
 public class Day21 {
 	static int register0 = 0;
 	static int register1 = 0;
@@ -31,7 +30,7 @@ public class Day21 {
 		// register0 is untouched but referenced by eqrr 3 0 4 (ip28 that breaks the
 		// loop)
 		// register1 is my ip
-//		for (int i = 1; i < 2; i++) {
+		// for (int i = 1; i < 2; i++) {
 		int i = 7216956;
 		int ip = 0;
 		setRegister(0, i);
@@ -57,8 +56,8 @@ public class Day21 {
 			nbOfOperations++;
 		}
 		mapNbOperations.put(i, nbOfOperations);
-//		}
-		int opMin = mapNbOperations.entrySet().stream().mapToInt(e -> e.getValue()).min().orElse(10000);
+		// }
+		int opMin = mapNbOperations.entrySet().stream().mapToInt(Entry::getValue).min().orElse(10000);
 		int intMin = mapNbOperations.entrySet().stream().filter(e -> e.getValue() == opMin).collect(Collectors.toList())
 				.get(0).getKey();
 		System.out.println(opMin);

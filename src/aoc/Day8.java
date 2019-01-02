@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.stream.Stream;
 
 public class Day8 {
 	static int sumPart1 = 0;
@@ -17,8 +18,8 @@ public class Day8 {
 		long timeStart = System.currentTimeMillis();
 		String input = "";
 		Path p = Paths.get("src/main/resources", "day8-input.file");
-		try {
-			input = Files.lines(p).findFirst().orElse(null);
+		try (Stream<String> st = Files.lines(p)) {
+			input = st.findFirst().orElse(null);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

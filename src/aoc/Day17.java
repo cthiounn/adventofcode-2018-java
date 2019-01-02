@@ -17,7 +17,7 @@ public class Day17 {
 
 	static List<String> queue = new ArrayList<>();
 	static List<String> source = new ArrayList<>();
-	static List<String> OldSources = new ArrayList<>();
+	static List<String> oldSources = new ArrayList<>();
 
 	static int xMax;
 	static int yMax;
@@ -37,7 +37,7 @@ public class Day17 {
 			queue.clear();
 			if (!source.isEmpty()) {
 				String currentSource = source.remove(0);
-				OldSources.add(currentSource);
+				oldSources.add(currentSource);
 				int xStreamSource = Integer.parseInt(currentSource.split("!")[0]);
 				int yStreamSource = Integer.parseInt(currentSource.split("!")[1]);
 				infinite = fillWater(grid, xStreamSource, yStreamSource);

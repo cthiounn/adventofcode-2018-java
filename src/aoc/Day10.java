@@ -41,8 +41,8 @@ public class Day10 {
 	public static void printGrid(List<Vector> list) {
 		int maxX = 0;
 		int maxY = 0;
-		int minX = 90000;
-		int minY = 90000;
+		int minX;
+		int minY;
 		int maxXold = 90000;
 		int maxYold = 90000;
 		boolean first = true;
@@ -88,15 +88,8 @@ public class Day10 {
 		int maxY = Integer.parseInt(metadata.split("!")[3]);
 		for (int j = minY - 1; j < maxY + 2; j++) {
 			for (int i = minX - 1; i < maxX + 2; i++) {
-
-				if (j == maxY + 1) {
-					if (grid.get(i + "*" + j + "*" + loopIndex) == null) {
-						System.out.println(".");
-					} else if (grid.get(i + "*" + j + "*" + loopIndex).intValue() == 1) {
-						System.out.println("#");
-					} else {
-						System.out.println(".");
-					}
+				if (i == maxX + 1) {
+					System.out.println(".");
 				} else {
 					if (grid.get(i + "*" + j + "*" + loopIndex) == null) {
 						System.out.print(".");

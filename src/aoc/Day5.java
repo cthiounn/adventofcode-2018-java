@@ -24,6 +24,7 @@ public class Day5 {
 	}
 
 	// bad Perf
+	// TODO
 	private static int part1(String input) {
 		String old = "";
 		String newS = input;
@@ -53,7 +54,6 @@ public class Day5 {
 	}
 
 	private static boolean isAReaction(char a, char b) {
-		boolean reactionThere = a != b && Character.toLowerCase(a) == Character.toLowerCase(b);
-		return reactionThere;
+		return a != b && Character.toLowerCase(a) == Character.toLowerCase(b);
 	}
 }
