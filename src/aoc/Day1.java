@@ -3,10 +3,9 @@ package aoc;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 public class Day1 {
 
@@ -19,20 +18,24 @@ public class Day1 {
 	}
 
 	public static void part1And2(List<String> lines) {
-		System.out.println("" + lines.stream().collect(Collectors.summingDouble(Double::valueOf)).intValue());
 		int sum = 0;
-		Map<Integer, Boolean> seen = new HashMap<>();
+		Set<Integer> seen = new HashSet<>();
 		boolean stop = false;
+		boolean first = true;
 		while (!stop) {
 			for (String line : lines) {
 				sum += Integer.parseInt(line);
-				if (seen.get(sum) == null) {
-					seen.put(sum, true);
+				if (seen.add(sum)) {
+					// good
 				} else {
 					System.out.println(sum);
 					stop = true;
 					break;
 				}
+			}
+			if (first) {
+				first = false;
+				System.out.println(sum);
 			}
 		}
 	}
